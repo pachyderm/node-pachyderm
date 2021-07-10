@@ -1,12 +1,14 @@
 {
   "compilerOptions": {
     "baseUrl": "./src",
-    "esModuleInterop": true,
-    "declaration": true,
     "module": "commonjs",
     "outDir": "./dist",
     "strict": true,
-    "strictPropertyInitialization": false,
-    "target": "ES6"
-  }
+    "declaration": true,
+    "target": "es5",
+    "lib": ["esnext"],
+    "esModuleInterop": true,
+    "strictPropertyInitialization": false
+  },
+  "include": ["./src"]
 }
