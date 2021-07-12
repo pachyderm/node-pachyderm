@@ -1,0 +1,14 @@
+{
+  "name": "edges",
+  "version": "1.0.0",
+  "description": "A pipeline to convert images into edges using opencv",
+  "main": "edges.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "license": "Apache-2.0",
+  "dependencies": {
+    "filehound": "^1.17.4",
+    "opencv": "^7.0.0"
+  }
+}
