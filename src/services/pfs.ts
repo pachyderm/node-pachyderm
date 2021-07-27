@@ -67,7 +67,7 @@ const pfs = ({
   });
 
   return {
-    deleteAll: () => {
+    deleteAllRepos: () => {
       return new Promise<Empty.AsObject>((resolve, reject) => {
         client.deleteAll(new Empty(), credentialMetadata, (error) => {
           if (error) {
