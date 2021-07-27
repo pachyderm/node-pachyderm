@@ -9,6 +9,8 @@ import {
   deleteBranchRequestFromObject,
   repoFromObject,
   triggerFromObject,
+  globFileRequestFromObject,
+  diffFileRequestFromObject,
 } from '../pfs';
 
 describe('grpc/builders/pfs', () => {
@@ -197,6 +199,136 @@ describe('grpc/builders/pfs', () => {
     expect(deleteBranchRequest.getBranch()?.getName()).toBe('master');
     expect(deleteBranchRequest.getBranch()?.getRepo()?.getName()).toBe('test');
     expect(deleteBranchRequest.getForce()).toBe(true);
+  });
+
+  it('should create globFileRequest from an object with defaults', () => {
+    const globFileRequest = globFileRequestFromObject({
+      commit: {
+        branch: {name: 'master', repo: {name: '__spec__'}},
+        id: '4af40d34a0384f23a5b98d3bd7eaece1',
+      },
+    });
+    expect(globFileRequest.getCommit()?.getBranch()?.getName()).toBe('master');
+    expect(globFileRequest.getCommit()?.getBranch()?.getRepo()?.getName()).toBe(
+      '__spec__',
+    );
+    expect(globFileRequest.getCommit()?.getId()).toBe(
+      '4af40d34a0384f23a5b98d3bd7eaece1',
+    );
+    expect(globFileRequest.getPattern()).toBe('/');
+  });
+
+  it('should create globFileRequest from an object with a pattern', () => {
+    const globFileRequest = globFileRequestFromObject({
+      commit: {
+        branch: {name: 'master', repo: {name: '__spec__'}},
+        id: '4af40d34a0384f23a5b98d3bd7eaece1',
+      },
+      pattern: '/*',
+    });
+    expect(globFileRequest.getCommit()?.getBranch()?.getName()).toBe('master');
+    expect(globFileRequest.getCommit()?.getBranch()?.getRepo()?.getName()).toBe(
+      '__spec__',
+    );
+    expect(globFileRequest.getCommit()?.getId()).toBe(
+      '4af40d34a0384f23a5b98d3bd7eaece1',
+    );
+    expect(globFileRequest.getPattern()).toBe('/*');
+  });
+
+  it('should create diffFileRequest from an object with shallow true by default', () => {
+    const diffFileRequest = diffFileRequestFromObject({
+      newFile: {
+        commitId: '1234567890',
+        path: '/newAsset',
+        branch: {name: 'master', repo: {name: 'neato'}},
+      },
+      oldFile: {
+        commitId: '0123456789',
+        path: '/oldAsset',
+        branch: {name: 'master', repo: {name: 'neatero'}},
+      },
+    });
+
+    expect(diffFileRequest.getNewFile()?.getCommit()?.getId()).toBe(
+      '1234567890',
+    );
+    expect(diffFileRequest.getNewFile()?.getPath()).toBe('/newAsset');
+    expect(
+      diffFileRequest.getNewFile()?.getCommit()?.getBranch()?.getName(),
+    ).toBe('master');
+    expect(
+      diffFileRequest
+        .getNewFile()
+        ?.getCommit()
+        ?.getBranch()
+        ?.getRepo()
+        ?.getName(),
+    ).toBe('neato');
+    expect(diffFileRequest.getOldFile()?.getCommit()?.getId()).toBe(
+      '0123456789',
+    );
+    expect(diffFileRequest.getOldFile()?.getPath()).toBe('/oldAsset');
+    expect(
+      diffFileRequest.getOldFile()?.getCommit()?.getBranch()?.getName(),
+    ).toBe('master');
+    expect(
+      diffFileRequest
+        .getOldFile()
+        ?.getCommit()
+        ?.getBranch()
+        ?.getRepo()
+        ?.getName(),
+    ).toBe('neatero');
+    expect(diffFileRequest.getShallow()).toBe(true);
+  });
+
+  it('should create diffFileRequest from an object with shallow set to false', () => {
+    const diffFileRequest = diffFileRequestFromObject({
+      newFile: {
+        commitId: '1234567890',
+        path: '/newAsset',
+        branch: {name: 'master', repo: {name: 'neato'}},
+      },
+      oldFile: {
+        commitId: '0123456789',
+        path: '/oldAsset',
+        branch: {name: 'master', repo: {name: 'neatero'}},
+      },
+      shallow: false,
+    });
+
+    expect(diffFileRequest.getNewFile()?.getCommit()?.getId()).toBe(
+      '1234567890',
+    );
+    expect(diffFileRequest.getNewFile()?.getPath()).toBe('/newAsset');
+    expect(
+      diffFileRequest.getNewFile()?.getCommit()?.getBranch()?.getName(),
+    ).toBe('master');
+    expect(
+      diffFileRequest
+        .getNewFile()
+        ?.getCommit()
+        ?.getBranch()
+        ?.getRepo()
+        ?.getName(),
+    ).toBe('neato');
+    expect(diffFileRequest.getOldFile()?.getCommit()?.getId()).toBe(
+      '0123456789',
+    );
+    expect(diffFileRequest.getOldFile()?.getPath()).toBe('/oldAsset');
+    expect(
+      diffFileRequest.getOldFile()?.getCommit()?.getBranch()?.getName(),
+    ).toBe('master');
+    expect(
+      diffFileRequest
+        .getOldFile()
+        ?.getCommit()
+        ?.getBranch()
+        ?.getRepo()
+        ?.getName(),
+    ).toBe('neatero');
+    expect(diffFileRequest.getShallow()).toBe(false);
   });
 
   it('should create CreateRepoRequest from an object with defaults', () => {

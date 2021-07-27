@@ -11,6 +11,10 @@ import {
   ListFileRequest,
   ListRepoRequest,
   RepoInfo,
+  FsckRequest,
+  FsckResponse,
+  WalkFileRequest,
+  DiffFileResponse,
 } from '@pachyderm/proto/pb/pfs/pfs_pb';
 import {Empty} from 'google-protobuf/google/protobuf/empty_pb';
 import {BytesValue} from 'google-protobuf/google/protobuf/wrappers_pb';
@@ -33,6 +37,10 @@ import {
   repoFromObject,
   RepoObject,
   BranchObject,
+  DiffFileRequestObject,
+  globFileRequestFromObject,
+  GlobFileRequestObject,
+  diffFileRequestFromObject,
 } from '../builders/pfs';
 import {ServiceArgs} from '../lib/types';
 import streamToObjectArray from '../utils/streamToObjectArray';
@@ -52,6 +60,16 @@ const pfs = ({
   });
 
   return {
+    deleteAll: () => {
+      return new Promise<Empty.AsObject>((resolve, reject) => {
+        client.deleteAll(new Empty(), credentialMetadata, (error) => {
+          if (error) {
+            return reject(error);
+          }
+          return resolve({});
+        });
+      });
+    },
     listFile: (params: FileObject) => {
       const listFileRequest = new ListFileRequest();
       const file = fileFromObject(params);
@@ -117,6 +135,28 @@ const pfs = ({
           },
         );
       });
+    },
+    walkFile: (params: FileObject) => {
+      const walkFileRequest = new WalkFileRequest();
+      walkFileRequest.setFile(fileFromObject(params));
+
+      const stream = client.walkFile(walkFileRequest, credentialMetadata);
+
+      return streamToObjectArray<FileInfo, FileInfo.AsObject>(stream);
+    },
+    globFile: (request: GlobFileRequestObject) => {
+      const globFileRequest = globFileRequestFromObject(request);
+      const stream = client.globFile(globFileRequest, credentialMetadata);
+
+      return streamToObjectArray<FileInfo, FileInfo.AsObject>(stream);
+    },
+    diffFile: (request: DiffFileRequestObject) => {
+      const diffFileRequest = diffFileRequestFromObject(request);
+      const stream = client.diffFile(diffFileRequest, credentialMetadata);
+
+      return streamToObjectArray<DiffFileResponse, DiffFileResponse.AsObject>(
+        stream,
+      );
     },
     listCommit: (
       repoName: RepoObject['name'],
@@ -242,6 +282,12 @@ const pfs = ({
           return resolve({});
         });
       });
+    },
+    fsck: (params: boolean) => {
+      const fsckRequest = new FsckRequest().setFix(params);
+      const stream = client.fsck(fsckRequest, credentialMetadata);
+
+      return streamToObjectArray<FsckResponse, FsckResponse.AsObject>(stream);
     },
   };
 };

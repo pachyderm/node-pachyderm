@@ -12,6 +12,8 @@ import {
   DeleteBranchRequest,
   Repo,
   Trigger,
+  GlobFileRequest,
+  DiffFileRequest,
 } from '@pachyderm/proto/pb/pfs/pfs_pb';
 
 import {timestampFromObject, TimestampObject} from '../builders/protobuf';
@@ -63,6 +65,17 @@ export type ListBranchRequestObject = {
 export type DeleteBranchRequestObject = {
   branch: BranchObject;
   force?: DeleteBranchRequest.AsObject['force'];
+};
+
+export type GlobFileRequestObject = {
+  commit: CommitObject;
+  pattern?: GlobFileRequest.AsObject['pattern'];
+};
+
+export type DiffFileRequestObject = {
+  newFile: FileObject;
+  oldFile: FileObject;
+  shallow?: DiffFileRequest.AsObject['shallow'];
 };
 
 export type CommitObject = {
@@ -239,6 +252,41 @@ export const deleteBranchRequestFromObject = ({
   }
 
   request.setForce(force);
+
+  return request;
+};
+
+export const globFileRequestFromObject = ({
+  commit,
+  pattern = '/',
+}: GlobFileRequestObject) => {
+  const request = new GlobFileRequest();
+
+  if (commit) {
+    request.setCommit(commitFromObject(commit));
+  }
+
+  request.setPattern(pattern);
+
+  return request;
+};
+
+export const diffFileRequestFromObject = ({
+  newFile,
+  oldFile,
+  shallow = true,
+}: DiffFileRequestObject) => {
+  const request = new DiffFileRequest();
+
+  if (newFile) {
+    request.setNewFile(fileFromObject(newFile));
+  }
+
+  if (oldFile) {
+    request.setOldFile(fileFromObject(oldFile));
+  }
+
+  request.setShallow(shallow);
 
   return request;
 };
