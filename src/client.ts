@@ -6,6 +6,12 @@ import auth from './services/auth';
 import pfs from './services/pfs';
 import pps from './services/pps';
 import projects from './services/projects';
+import {homedir} from 'os';
+import {readFileSync, existsSync, read} from 'fs';
+
+const envConfig = 'PACH_CONFIG';
+const spoutConfig = '/pachctl/config.json';
+const localConfig = `${homedir()}/.pachyderm/config.json`;
 
 interface ClientArgs {
   pachdAddress?: string;
@@ -50,6 +56,64 @@ const attachPlugins = <T extends ServiceDefinition>(
   };
 
   return new Proxy(service, serviceProxyHandler);
+};
+
+const checkForConfig = () => {
+  let jc = {};
+
+  jc = checkPachConfigEnvVar();
+  if (jc !== {}) {
+    return jc;
+  }
+  jc = checkPachConfigSpout();
+  if (jc !== {}) {
+    return jc;
+  }
+  jc = checkPachConfigLocal();
+  if (jc !== {}) {
+    return jc;
+  }
+
+  console.log('no config found, proceeding with default behaviour');
+
+  return jc;
+};
+
+const checkPachConfigEnvVar = () => {
+  let jc = {};
+  if (process.env[envConfig]) {
+    // found a pach config location through env vars
+    const pachEnvConf = readFileSync(process.env[envConfig] || '', {
+      encoding: 'utf8',
+      flag: 'r',
+    });
+    jc = JSON.parse(pachEnvConf);
+  }
+  return jc;
+};
+
+const checkPachConfigSpout = () => {
+  let jc = {};
+  if (existsSync(spoutConfig)) {
+    const pachSpoutConf = readFileSync(spoutConfig, {
+      encoding: 'utf8',
+      flag: 'r',
+    });
+    jc = JSON.parse(pachSpoutConf);
+  }
+  return jc;
+};
+
+const checkPachConfigLocal = () => {
+  let jc = {};
+  if (existsSync(localConfig)) {
+    const pachLocalConf = readFileSync(localConfig, {
+      encoding: 'utf8',
+      flag: 'r',
+    });
+    jc = JSON.parse(pachLocalConf);
+  }
+  return jc;
 };
 
 const client = ({
