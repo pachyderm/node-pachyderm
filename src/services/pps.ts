@@ -20,6 +20,8 @@ import {
   pipelineFromObject,
   GetLogsRequestObject,
   getLogsRequestFromObject,
+  InspectJobRequestObject,
+  inspectJobRequestFromObject,
 } from '../builders/pps';
 import {JobSetQueryArgs, JobQueryArgs, ServiceArgs} from '../lib/types';
 import {DEFAULT_JOBS_LIMIT} from '../services/constants/pps';
@@ -109,16 +111,11 @@ const pps = ({
       );
     },
 
-    inspectJob: ({id, pipelineName}: JobQueryArgs) => {
+    inspectJob: (request: InspectJobRequestObject) => {
+      const inspectJobRequest = inspectJobRequestFromObject(request);
       return new Promise<JobInfo.AsObject>((resolve, reject) => {
         client.inspectJob(
-          new InspectJobRequest()
-            .setJob(
-              jobFromObject({id}).setPipeline(
-                pipelineFromObject({name: pipelineName}),
-              ),
-            )
-            .setDetails(true),
+          inspectJobRequest,
           credentialMetadata,
           (error, res) => {
             if (error) {
