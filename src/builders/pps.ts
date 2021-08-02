@@ -22,6 +22,8 @@ import {
   JobInfo,
   GetLogsRequest,
   InspectJobRequest,
+  InspectJobSetRequest,
+  JobSet,
 } from '@pachyderm/proto/pb/pps/pps_pb';
 
 import {
@@ -191,7 +193,9 @@ export type JobObject = {
   pipeline?: PipelineObject;
 };
 
-export type JobSetObject = {};
+export type JobSetObject = {
+  id: JobSet.AsObject['id'];
+};
 
 export type JobInfoObject = {
   job: Pick<Job.AsObject, 'id' | 'pipeline'>;
@@ -213,6 +217,12 @@ export type GetLogsRequestObject = {
 export type InspectJobRequestObject = {
   job: JobObject;
   pipeline: PipelineObject;
+  wait?: boolean;
+  details?: boolean;
+};
+
+export type InspectJobSetRequestObject = {
+  jobSet: JobSetObject;
   wait?: boolean;
   details?: boolean;
 };
@@ -600,6 +610,13 @@ export const jobFromObject = ({id, pipeline}: JobObject) => {
   return job;
 };
 
+export const jobSetFromObject = ({id}: JobObject) => {
+  const jobSet = new JobSet();
+  jobSet.setId(id);
+
+  return jobSet;
+};
+
 export const jobInfoFromObject = ({
   job: {id, pipeline: {name} = {name: ''}},
   createdAt,
@@ -681,6 +698,23 @@ export const inspectJobRequestFromObject = ({
     request.setJob(
       jobFromObject(job).setPipeline(pipelineFromObject(pipeline)),
     );
+  }
+
+  request.setWait(wait);
+  request.setDetails(details);
+
+  return request;
+};
+
+export const inspectJobSetRequestFromObject = ({
+  jobSet,
+  wait = true,
+  details = true,
+}: InspectJobSetRequestObject) => {
+  const request = new InspectJobSetRequest();
+
+  if (jobSet) {
+    request.setJobSet(jobSetFromObject(jobSet));
   }
 
   request.setWait(wait);

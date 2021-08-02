@@ -22,6 +22,8 @@ import {
   getLogsRequestFromObject,
   InspectJobRequestObject,
   inspectJobRequestFromObject,
+  InspectJobSetRequestObject,
+  inspectJobSetRequestFromObject,
 } from '../builders/pps';
 import {JobSetQueryArgs, JobQueryArgs, ServiceArgs} from '../lib/types';
 import {DEFAULT_JOBS_LIMIT} from '../services/constants/pps';
@@ -86,11 +88,8 @@ const pps = ({
       });
     },
 
-    inspectJobSet: ({id}: JobSetQueryArgs) => {
-      const inspectJobSetRequest = new InspectJobSetRequest()
-        .setWait(false)
-        .setJobSet(new JobSet().setId(id))
-        .setDetails(true);
+    inspectJobSet: (request: InspectJobSetRequestObject) => {
+      const inspectJobSetRequest = inspectJobSetRequestFromObject(request);
 
       const stream = client.inspectJobSet(
         inspectJobSetRequest,

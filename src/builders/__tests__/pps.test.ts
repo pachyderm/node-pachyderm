@@ -19,6 +19,7 @@ import {
   jobFromObject,
   getLogsRequestFromObject,
   inspectJobRequestFromObject,
+  inspectJobSetRequestFromObject,
 } from '../pps';
 
 describe('grpc/builders/pps', () => {
@@ -659,4 +660,24 @@ it('should create InspectJobRequest from an object with to wait false and detail
   expect(inspectJobRequest.getJob()?.getPipeline()?.getName()).toBe('edges');
   expect(inspectJobRequest.getWait()).toBe(false);
   expect(inspectJobRequest.getDetails()).toBe(false);
+});
+
+it('should create InspectJobSetRequest from an object with defaults to wait and display all details', () => {
+  const inspectJobSetRequest = inspectJobSetRequestFromObject({
+    jobSet: {id: '23efw4ef098few0'},
+  });
+  expect(inspectJobSetRequest.getJobSet()?.getId()).toBe('23efw4ef098few0');
+  expect(inspectJobSetRequest.getWait()).toBe(true);
+  expect(inspectJobSetRequest.getDetails()).toBe(true);
+});
+
+it('should create InspectJobSetRequest from an object with to wait false and details false', () => {
+  const inspectJobSetRequest = inspectJobSetRequestFromObject({
+    jobSet: {id: '23efw4ef098few0'},
+    details: false,
+    wait: false,
+  });
+  expect(inspectJobSetRequest.getJobSet()?.getId()).toBe('23efw4ef098few0');
+  expect(inspectJobSetRequest.getWait()).toBe(false);
+  expect(inspectJobSetRequest.getDetails()).toBe(false);
 });
