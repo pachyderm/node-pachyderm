@@ -57,7 +57,7 @@ const pps = ({
       return streamToObjectArray<PipelineInfo, PipelineInfo.AsObject>(stream);
     },
 
-    listJobs: (request: ListJobRequestObject) => {
+    listJob: (request: ListJobRequestObject) => {
       const listJobRequest = listJobRequestFromObject(request);
 
       const stream = client.listJob(listJobRequest, credentialMetadata);
@@ -97,14 +97,15 @@ const pps = ({
       return streamToObjectArray<JobInfo, JobInfo.AsObject>(stream);
     },
 
-    listJobSets: ({limit}: ListArgs = {}) => {
-      const listJobSetRequest = new ListJobSetRequest().setDetails(true);
+    listJobSet: (params: ListJobSetRequest.AsObject['details'] = false) => {
+      const listJobSetRequest = new ListJobSetRequest().setDetails(params);
 
       const stream = client.listJobSet(listJobSetRequest, credentialMetadata);
 
       return streamToObjectArray<JobSetInfo, JobSetInfo.AsObject>(
         stream,
-        limit || DEFAULT_JOBS_LIMIT,
+        // TODO: bring user opt in limits to be used here ||
+        DEFAULT_JOBS_LIMIT,
       );
     },
 
