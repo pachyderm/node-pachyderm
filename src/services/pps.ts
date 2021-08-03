@@ -1,4 +1,5 @@
 import {ClientReadableStream} from '@grpc/grpc-js';
+import {Empty} from 'google-protobuf/google/protobuf/empty_pb';
 import {APIClient} from '@pachyderm/proto/pb/pps/pps_grpc_pb';
 import {
   ListJobRequest,
@@ -13,6 +14,8 @@ import {
   Pipeline,
   ListJobSetRequest,
   JobSetInfo,
+  DeleteJobRequest,
+  Job,
 } from '@pachyderm/proto/pb/pps/pps_pb';
 
 import {
@@ -27,6 +30,8 @@ import {
   listJobRequestFromObject,
   SubscribeJobRequestObject,
   subscribeJobRequestFromObject,
+  jobFromObject,
+  JobObject,
 } from '../builders/pps';
 import {JobSetQueryArgs, JobQueryArgs, ServiceArgs} from '../lib/types';
 import {DEFAULT_JOBS_LIMIT} from '../services/constants/pps';
@@ -135,6 +140,21 @@ const pps = ({
             return resolve(res.toObject());
           },
         );
+      });
+    },
+
+    deleteJob: (params: JobObject) => {
+      return new Promise<Empty.AsObject>((resolve, reject) => {
+        const deleteJobRequest = new DeleteJobRequest().setJob(
+          jobFromObject(params),
+        );
+
+        client.deleteJob(deleteJobRequest, credentialMetadata, (error) => {
+          if (error) {
+            return reject(error);
+          }
+          return resolve({});
+        });
       });
     },
 
