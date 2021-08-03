@@ -729,7 +729,18 @@ it('should create ListJobRequest from an object with an input commit set', () =>
   expect(listJobRequest.getJqfilter()).toBe('');
 });
 
-it('should create ListJobRequest from an object with an input commit set', () => {
+it('should create ListJobRequest from an object with history set to 1', () => {
+  const listJobRequest = listJobRequestFromObject({
+    history: 1,
+  });
+  expect(listJobRequest.getPipeline()?.getName()).toBe(undefined);
+  expect(listJobRequest.getInputCommitList()[0]?.getId()).toBe(undefined);
+  expect(listJobRequest.getHistory()).toBe(1);
+  expect(listJobRequest.getDetails()).toBe(true);
+  expect(listJobRequest.getJqfilter()).toBe('');
+});
+
+it('should create ListJobRequest from an object with details set to false', () => {
   const listJobRequest = listJobRequestFromObject({
     details: false,
   });
