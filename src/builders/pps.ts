@@ -25,6 +25,7 @@ import {
   InspectJobSetRequest,
   JobSet,
   ListJobRequest,
+  SubscribeJobRequest,
 } from '@pachyderm/proto/pb/pps/pps_pb';
 
 import {
@@ -234,6 +235,11 @@ export type ListJobRequestObject = {
   history?: ListJobRequest.AsObject['history'];
   details?: ListJobRequest.AsObject['details'];
   jqfilter?: ListJobRequest.AsObject['jqfilter'];
+};
+
+export type SubscribeJobRequestObject = {
+  pipeline: PipelineObject;
+  details?: SubscribeJobRequest.AsObject['details'];
 };
 
 export const pipelineFromObject = ({name}: PipelineObject) => {
@@ -755,5 +761,18 @@ export const listJobRequestFromObject = ({
   request.setHistory(history);
   request.setDetails(details);
 
+  return request;
+};
+
+export const subscribeJobRequestFromObject = ({
+  pipeline,
+  details = true,
+}: SubscribeJobRequestObject) => {
+  const request = new SubscribeJobRequest();
+
+  request.setPipeline(pipelineFromObject(pipeline));
+  if (details) {
+    request.setDetails(details);
+  }
   return request;
 };

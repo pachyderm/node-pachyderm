@@ -25,6 +25,8 @@ import {
   inspectJobSetRequestFromObject,
   ListJobRequestObject,
   listJobRequestFromObject,
+  SubscribeJobRequestObject,
+  subscribeJobRequestFromObject,
 } from '../builders/pps';
 import {JobSetQueryArgs, JobQueryArgs, ServiceArgs} from '../lib/types';
 import {DEFAULT_JOBS_LIMIT} from '../services/constants/pps';
@@ -67,6 +69,17 @@ const pps = ({
         // TODO: bring user opt in limits to be used here ||
         DEFAULT_JOBS_LIMIT,
       );
+    },
+
+    subscribeJob: (request: SubscribeJobRequestObject) => {
+      const subscribeJobRequest = subscribeJobRequestFromObject(request);
+
+      const stream = client.subscribeJob(
+        subscribeJobRequest,
+        credentialMetadata,
+      );
+
+      return streamToObjectArray<JobInfo, JobInfo.AsObject>(stream);
     },
 
     inspectPipeline: (id: string) => {

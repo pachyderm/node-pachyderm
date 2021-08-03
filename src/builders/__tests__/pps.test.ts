@@ -21,6 +21,7 @@ import {
   inspectJobRequestFromObject,
   inspectJobSetRequestFromObject,
   listJobRequestFromObject,
+  subscribeJobRequestFromObject,
 } from '../pps';
 
 describe('grpc/builders/pps', () => {
@@ -760,4 +761,21 @@ it('should create ListJobRequest from an object with a jq filter', () => {
   expect(listJobRequest.getHistory()).toBe(0);
   expect(listJobRequest.getDetails()).toBe(true);
   expect(listJobRequest.getJqfilter()).toBe('testfilter');
+});
+
+it('should create SubscribeJobRequest from an object with defaults details set to true', () => {
+  const subscribeJobRequest = subscribeJobRequestFromObject({
+    pipeline: {name: 'edges'},
+  });
+  expect(subscribeJobRequest.getPipeline()?.getName()).toBe('edges');
+  expect(subscribeJobRequest.getDetails()).toBe(true);
+});
+
+it('should create SubscribeJobRequest from an object with details set to false', () => {
+  const subscribeJobRequest = subscribeJobRequestFromObject({
+    pipeline: {name: 'edges'},
+    details: false,
+  });
+  expect(subscribeJobRequest.getPipeline()?.getName()).toBe('edges');
+  expect(subscribeJobRequest.getDetails()).toBe(false);
 });
