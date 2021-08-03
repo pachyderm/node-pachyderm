@@ -20,6 +20,7 @@ import {
   getLogsRequestFromObject,
   inspectJobRequestFromObject,
   inspectJobSetRequestFromObject,
+  listJobRequestFromObject,
 } from '../pps';
 
 describe('grpc/builders/pps', () => {
@@ -680,4 +681,72 @@ it('should create InspectJobSetRequest from an object with to wait false and det
   expect(inspectJobSetRequest.getJobSet()?.getId()).toBe('23efw4ef098few0');
   expect(inspectJobSetRequest.getWait()).toBe(false);
   expect(inspectJobSetRequest.getDetails()).toBe(false);
+});
+
+it('should create ListJobRequest from an object with defaults', () => {
+  const listJobRequest = listJobRequestFromObject({});
+  expect(listJobRequest.getPipeline()?.getName()).toBe(undefined); // nil for all pipelines
+  expect(listJobRequest.getInputCommitList()[0]?.getId()).toBe(undefined); // nil for all input commits
+  expect(listJobRequest.getHistory()).toBe(0);
+  expect(listJobRequest.getDetails()).toBe(true);
+  expect(listJobRequest.getJqfilter()).toBe('');
+});
+
+it('should create ListJobRequest from an object with a pipeline set', () => {
+  const listJobRequest = listJobRequestFromObject({
+    pipeline: {
+      name: 'testPipeline',
+    },
+  });
+  expect(listJobRequest.getPipeline()?.getName()).toBe('testPipeline');
+  expect(listJobRequest.getInputCommitList()[0]?.getId()).toBe(undefined);
+  expect(listJobRequest.getHistory()).toBe(0);
+  expect(listJobRequest.getDetails()).toBe(true);
+  expect(listJobRequest.getJqfilter()).toBe('');
+});
+
+it('should create ListJobRequest from an object with an input commit set', () => {
+  const listJobRequest = listJobRequestFromObject({
+    inputCommit: [
+      {
+        branch: {name: 'master', repo: {name: '__spec__'}},
+        id: '4af40d34a0384f23a5b98d3bd7eaece1',
+      },
+    ],
+  });
+  expect(listJobRequest.getPipeline()?.getName()).toBe(undefined);
+  expect(listJobRequest.getInputCommitList()[0]?.getId()).toBe(
+    '4af40d34a0384f23a5b98d3bd7eaece1',
+  );
+  expect(listJobRequest.getInputCommitList()[0]?.getBranch()?.getName()).toBe(
+    'master',
+  );
+  expect(
+    listJobRequest.getInputCommitList()[0]?.getBranch()?.getRepo()?.getName(),
+  ).toBe('__spec__');
+  expect(listJobRequest.getHistory()).toBe(0);
+  expect(listJobRequest.getDetails()).toBe(true);
+  expect(listJobRequest.getJqfilter()).toBe('');
+});
+
+it('should create ListJobRequest from an object with an input commit set', () => {
+  const listJobRequest = listJobRequestFromObject({
+    details: false,
+  });
+  expect(listJobRequest.getPipeline()?.getName()).toBe(undefined);
+  expect(listJobRequest.getInputCommitList()[0]?.getId()).toBe(undefined);
+  expect(listJobRequest.getHistory()).toBe(0);
+  expect(listJobRequest.getDetails()).toBe(false);
+  expect(listJobRequest.getJqfilter()).toBe('');
+});
+
+it('should create ListJobRequest from an object with a jq filter', () => {
+  const listJobRequest = listJobRequestFromObject({
+    jqfilter: 'testfilter',
+  });
+  expect(listJobRequest.getPipeline()?.getName()).toBe(undefined);
+  expect(listJobRequest.getInputCommitList()[0]?.getId()).toBe(undefined);
+  expect(listJobRequest.getHistory()).toBe(0);
+  expect(listJobRequest.getDetails()).toBe(true);
+  expect(listJobRequest.getJqfilter()).toBe('testfilter');
 });

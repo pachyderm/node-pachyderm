@@ -16,7 +16,6 @@ import {
 } from '@pachyderm/proto/pb/pps/pps_pb';
 
 import {
-  jobFromObject,
   pipelineFromObject,
   GetLogsRequestObject,
   getLogsRequestFromObject,
@@ -24,6 +23,8 @@ import {
   inspectJobRequestFromObject,
   InspectJobSetRequestObject,
   inspectJobSetRequestFromObject,
+  ListJobRequestObject,
+  listJobRequestFromObject,
 } from '../builders/pps';
 import {JobSetQueryArgs, JobQueryArgs, ServiceArgs} from '../lib/types';
 import {DEFAULT_JOBS_LIMIT} from '../services/constants/pps';
@@ -56,18 +57,15 @@ const pps = ({
       return streamToObjectArray<PipelineInfo, PipelineInfo.AsObject>(stream);
     },
 
-    listJobs: ({limit, pipelineId}: ListJobArgs = {}) => {
-      const listJobRequest = new ListJobRequest().setDetails(true);
-
-      if (pipelineId) {
-        listJobRequest.setPipeline(new Pipeline().setName(pipelineId));
-      }
+    listJobs: (request: ListJobRequestObject) => {
+      const listJobRequest = listJobRequestFromObject(request);
 
       const stream = client.listJob(listJobRequest, credentialMetadata);
 
       return streamToObjectArray<JobInfo, JobInfo.AsObject>(
         stream,
-        limit || DEFAULT_JOBS_LIMIT,
+        // TODO: bring user opt in limits to be used here ||
+        DEFAULT_JOBS_LIMIT,
       );
     },
 

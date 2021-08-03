@@ -24,6 +24,7 @@ import {
   InspectJobRequest,
   InspectJobSetRequest,
   JobSet,
+  ListJobRequest,
 } from '@pachyderm/proto/pb/pps/pps_pb';
 
 import {
@@ -217,14 +218,22 @@ export type GetLogsRequestObject = {
 export type InspectJobRequestObject = {
   job: JobObject;
   pipeline: PipelineObject;
-  wait?: boolean;
-  details?: boolean;
+  wait?: InspectJobRequest.AsObject['wait'];
+  details?: InspectJobRequest.AsObject['details'];
 };
 
 export type InspectJobSetRequestObject = {
   jobSet: JobSetObject;
-  wait?: boolean;
-  details?: boolean;
+  wait?: InspectJobSetRequest.AsObject['wait'];
+  details?: InspectJobSetRequest.AsObject['details'];
+};
+
+export type ListJobRequestObject = {
+  pipeline?: PipelineObject;
+  inputCommit?: CommitObject[];
+  history?: ListJobRequest.AsObject['history'];
+  details?: ListJobRequest.AsObject['details'];
+  jqfilter?: ListJobRequest.AsObject['jqfilter'];
 };
 
 export const pipelineFromObject = ({name}: PipelineObject) => {
@@ -718,6 +727,32 @@ export const inspectJobSetRequestFromObject = ({
   }
 
   request.setWait(wait);
+  request.setDetails(details);
+
+  return request;
+};
+
+export const listJobRequestFromObject = ({
+  pipeline,
+  inputCommit,
+  history = 0,
+  details = true,
+  jqfilter = '',
+}: ListJobRequestObject) => {
+  const request = new ListJobRequest();
+
+  if (pipeline) {
+    request.setPipeline(pipelineFromObject(pipeline));
+  }
+  if (inputCommit) {
+    const transformedCommits = inputCommit.map((commit) => {
+      return commitFromObject(commit);
+    });
+    request.setInputCommitList(transformedCommits);
+  }
+
+  request.setJqfilter(jqfilter);
+  request.setHistory(history);
   request.setDetails(details);
 
   return request;
