@@ -610,7 +610,7 @@ export const jobFromObject = ({id, pipeline}: JobObject) => {
   return job;
 };
 
-export const jobSetFromObject = ({id}: JobObject) => {
+export const jobSetFromObject = ({id}: JobSetObject) => {
   const jobSet = new JobSet();
   jobSet.setId(id);
 
