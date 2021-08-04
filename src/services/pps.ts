@@ -19,6 +19,9 @@ import {
   StopJobRequest,
   InspectDatumRequest,
   DatumInfo,
+  StartPipelineRequest,
+  StopPipelineRequest,
+  RunCronRequest,
 } from '@pachyderm/proto/pb/pps/pps_pb';
 
 import {
@@ -51,6 +54,7 @@ import {
   listPipelineRequestFromObject,
   deletePipelineRequestFromObject,
   DeletePipelineRequestObject,
+  PipelineObject,
 } from '../builders/pps';
 import {JobSetQueryArgs, JobQueryArgs, ServiceArgs} from '../lib/types';
 import {DEFAULT_JOBS_LIMIT} from '../services/constants/pps';
@@ -249,6 +253,59 @@ const pps = ({
       });
     },
 
+    startPipeline: (params: PipelineObject) => {
+      return new Promise<Empty.AsObject>((resolve, reject) => {
+        const startPipelineRequest = new StartPipelineRequest().setPipeline(
+          pipelineFromObject(params),
+        );
+
+        client.startPipeline(
+          startPipelineRequest,
+          credentialMetadata,
+          (error) => {
+            if (error) {
+              return reject(error);
+            }
+            return resolve({});
+          },
+        );
+      });
+    },
+
+    stopPipeline: (params: PipelineObject) => {
+      return new Promise<Empty.AsObject>((resolve, reject) => {
+        const stopPipelineRequest = new StopPipelineRequest().setPipeline(
+          pipelineFromObject(params),
+        );
+
+        client.stopPipeline(
+          stopPipelineRequest,
+          credentialMetadata,
+          (error) => {
+            if (error) {
+              return reject(error);
+            }
+            return resolve({});
+          },
+        );
+      });
+    },
+
+    runCron: (params: PipelineObject) => {
+      return new Promise<Empty.AsObject>((resolve, reject) => {
+        const runCronRequest = new RunCronRequest().setPipeline(
+          pipelineFromObject(params),
+        );
+
+        client.runCron(runCronRequest, credentialMetadata, (error) => {
+          if (error) {
+            return reject(error);
+          }
+          return resolve({});
+        });
+      });
+    },
+
     deletePipeline: (request: DeletePipelineRequestObject) => {
       return new Promise<Empty.AsObject>((resolve, reject) => {
         const deletePipelineRequest = deletePipelineRequestFromObject(request);
@@ -263,6 +320,17 @@ const pps = ({
             return resolve({});
           },
         );
+      });
+    },
+
+    deleteAllPipelines: () => {
+      return new Promise<Empty.AsObject>((resolve, reject) => {
+        client.deleteAll(new Empty(), credentialMetadata, (error) => {
+          if (error) {
+            return reject(error);
+          }
+          return resolve({});
+        });
       });
     },
 
