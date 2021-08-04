@@ -7,7 +7,6 @@ import {
   startCommitRequestFromObject,
   finishCommitRequestFromObject,
   inspectCommitRequestFromObject,
-  listCommitRequestFromObject,
   subscribeCommitRequestFromObject,
   commitSetFromObject,
   fileFromObject,
@@ -366,125 +365,6 @@ describe('grpc/builders/pfs', () => {
     expect(inspectCommitRequest.getCommit()?.getId()).toBe(
       '4af40d34a0384f23a5b98d3bd7eaece1',
     );
-  });
-
-  it('should create a listCommitRequest from an object with defaults', () => {
-    const listCommitRequest = listCommitRequestFromObject({
-      repo: {
-        name: '__spec__',
-      },
-    });
-
-    expect(listCommitRequest.getRepo()?.getName()).toBe('__spec__');
-    expect(listCommitRequest.getRepo()?.getType()).toBe('user');
-    expect(listCommitRequest.getAll()).toBe(true);
-    expect(listCommitRequest.getReverse()).toBe(false);
-  });
-
-  it('should create a listCommitRequest from an object with from', () => {
-    const listCommitRequest = listCommitRequestFromObject({
-      repo: {
-        name: '__spec__',
-      },
-      from: {
-        branch: {name: 'master', repo: {name: '__spec__'}},
-        id: '4af40d34a0384f23a5b98d3bd7eaece1',
-      },
-    });
-
-    expect(listCommitRequest.getRepo()?.getName()).toBe('__spec__');
-    expect(listCommitRequest.getRepo()?.getType()).toBe('user');
-    expect(listCommitRequest.getAll()).toBe(true);
-    expect(listCommitRequest.getReverse()).toBe(false);
-    expect(listCommitRequest.getFrom()?.getBranch()?.getName()).toBe('master');
-    expect(listCommitRequest.getFrom()?.getBranch()?.getRepo()?.getName()).toBe(
-      '__spec__',
-    );
-    expect(listCommitRequest.getFrom()?.getId()).toBe(
-      '4af40d34a0384f23a5b98d3bd7eaece1',
-    );
-  });
-
-  it('should create a listCommitRequest from an object with to', () => {
-    const listCommitRequest = listCommitRequestFromObject({
-      repo: {
-        name: '__spec__',
-      },
-      to: {
-        branch: {name: 'master', repo: {name: '__spec__'}},
-        id: '4af40d34a0384f23a5b98d3bd7eaece1',
-      },
-    });
-
-    expect(listCommitRequest.getRepo()?.getName()).toBe('__spec__');
-    expect(listCommitRequest.getRepo()?.getType()).toBe('user');
-    expect(listCommitRequest.getAll()).toBe(true);
-    expect(listCommitRequest.getReverse()).toBe(false);
-    expect(listCommitRequest.getTo()?.getBranch()?.getName()).toBe('master');
-    expect(listCommitRequest.getTo()?.getBranch()?.getRepo()?.getName()).toBe(
-      '__spec__',
-    );
-    expect(listCommitRequest.getTo()?.getId()).toBe(
-      '4af40d34a0384f23a5b98d3bd7eaece1',
-    );
-  });
-
-  it('should create a listCommitRequest from an object with number', () => {
-    const listCommitRequest = listCommitRequestFromObject({
-      repo: {
-        name: '__spec__',
-      },
-      number: 1,
-    });
-
-    expect(listCommitRequest.getRepo()?.getName()).toBe('__spec__');
-    expect(listCommitRequest.getRepo()?.getType()).toBe('user');
-    expect(listCommitRequest.getAll()).toBe(true);
-    expect(listCommitRequest.getReverse()).toBe(false);
-    expect(listCommitRequest.getNumber()).toBe(1);
-  });
-
-  it('should create a listCommitRequest from an object with originKind', () => {
-    const listCommitRequest = listCommitRequestFromObject({
-      repo: {
-        name: '__spec__',
-      },
-      originKind: OriginKind.USER,
-    });
-
-    expect(listCommitRequest.getRepo()?.getName()).toBe('__spec__');
-    expect(listCommitRequest.getRepo()?.getType()).toBe('user');
-    expect(listCommitRequest.getAll()).toBe(true);
-    expect(listCommitRequest.getReverse()).toBe(false);
-    expect(listCommitRequest.getOriginKind()).toBe(1);
-  });
-
-  it('should create a listCommitRequest from an object with setAll to false', () => {
-    const listCommitRequest = listCommitRequestFromObject({
-      repo: {
-        name: '__spec__',
-      },
-      all: false,
-    });
-
-    expect(listCommitRequest.getRepo()?.getName()).toBe('__spec__');
-    expect(listCommitRequest.getRepo()?.getType()).toBe('user');
-    expect(listCommitRequest.getAll()).toBe(false);
-    expect(listCommitRequest.getReverse()).toBe(false);
-  });
-
-  it('should create a listCommitRequest from an object with reverse to true', () => {
-    const listCommitRequest = listCommitRequestFromObject({
-      repo: {
-        name: '__spec__',
-      },
-      reverse: true,
-    });
-
-    expect(listCommitRequest.getRepo()?.getName()).toBe('__spec__');
-    expect(listCommitRequest.getRepo()?.getType()).toBe('user');
-    expect(listCommitRequest.getAll()).toBe(true);
-    expect(listCommitRequest.getReverse()).toBe(true);
   });
 
   it('should create a subscribeCommitRequest from an object with defaults', () => {

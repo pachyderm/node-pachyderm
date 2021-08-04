@@ -16,7 +16,6 @@ import {
   Trigger,
   StartCommitRequest,
   FinishCommitRequest,
-  ListCommitRequest,
   SubscribeCommitRequest,
   InspectCommitRequest,
   CommitState,
@@ -72,16 +71,6 @@ export type FinishCommitRequestObject = {
 export type InspectCommitRequestObject = {
   wait: CommitState;
   commit: CommitObject;
-};
-
-export type ListCommitRequestObject = {
-  repo: RepoObject;
-  number?: ListCommitRequest.AsObject['number'];
-  reverse?: ListCommitRequest.AsObject['reverse'];
-  all?: ListCommitRequest.AsObject['all'];
-  originKind?: OriginKind;
-  from?: CommitObject;
-  to?: CommitObject;
 };
 
 export type SubscribeCommitRequestObject = {
@@ -293,43 +282,6 @@ export const inspectCommitRequestFromObject = ({
   if (commit) {
     request.setCommit(commitFromObject(commit));
   }
-
-  return request;
-};
-
-export const listCommitRequestFromObject = ({
-  number,
-  all = true,
-  originKind,
-  from,
-  to,
-  repo,
-  reverse = false,
-}: ListCommitRequestObject) => {
-  const request = new ListCommitRequest();
-
-  if (repo) {
-    request.setRepo(repoFromObject(repo).setType('user'));
-  }
-
-  if (from) {
-    request.setFrom(commitFromObject(from));
-  }
-
-  if (to) {
-    request.setTo(commitFromObject(to));
-  }
-
-  if (number) {
-    request.setNumber(number);
-  }
-
-  if (originKind) {
-    request.setOriginKind(originKind);
-  }
-
-  request.setAll(all);
-  request.setReverse(reverse);
 
   return request;
 };

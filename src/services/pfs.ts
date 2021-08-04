@@ -15,9 +15,12 @@ import {
   SquashCommitSetRequest,
   Commit,
   ClearCommitRequest,
+  ListCommitRequest,
 } from '@pachyderm/proto/pb/pfs/pfs_pb';
 import {Empty} from 'google-protobuf/google/protobuf/empty_pb';
 import {BytesValue} from 'google-protobuf/google/protobuf/wrappers_pb';
+
+import {ListCommitArgs} from 'lib/pfsTypes';
 
 import {
   commitSetFromObject,
@@ -48,8 +51,6 @@ import {
   InspectCommitRequestObject,
   inspectCommitRequestFromObject,
   commitFromObject,
-  ListCommitRequestObject,
-  listCommitRequestFromObject,
   SubscribeCommitRequestObject,
   subscribeCommitRequestFromObject,
 } from '../builders/pfs';
@@ -131,8 +132,39 @@ const pfs = ({
         );
       });
     },
-    listCommit: (request: ListCommitRequestObject) => {
-      const listCommitRequest = listCommitRequestFromObject(request);
+    listCommit: ({
+      number,
+      all = true,
+      originKind,
+      from,
+      to,
+      repo,
+      reverse = false,
+    }: ListCommitArgs) => {
+      const listCommitRequest = new ListCommitRequest();
+      if (repo) {
+        listCommitRequest.setRepo(repoFromObject(repo).setType('user'));
+      }
+
+      if (from) {
+        listCommitRequest.setFrom(commitFromObject(from));
+      }
+
+      if (to) {
+        listCommitRequest.setTo(commitFromObject(to));
+      }
+
+      if (number) {
+        listCommitRequest.setNumber(number);
+      }
+
+      if (originKind) {
+        listCommitRequest.setOriginKind(originKind);
+      }
+
+      listCommitRequest.setAll(all);
+      listCommitRequest.setReverse(reverse);
+
       const stream = client.listCommit(listCommitRequest, credentialMetadata);
 
       return streamToObjectArray<CommitInfo, CommitInfo.AsObject>(stream);
