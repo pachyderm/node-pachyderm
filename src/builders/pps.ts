@@ -33,6 +33,7 @@ import {
   ProcessStats,
   DatumInfo,
   ListDatumRequest,
+  RestartDatumRequest,
 } from '@pachyderm/proto/pb/pps/pps_pb';
 
 import {
@@ -282,6 +283,11 @@ export type SubscribeJobRequestObject = {
 export type StopJobRequestObject = {
   job: JobObject;
   reason?: StopJobRequest.AsObject['reason'];
+};
+
+export type RestartDatumRequestObject = {
+  job: JobObject;
+  dataFilters: RestartDatumRequest.AsObject['dataFiltersList'];
 };
 
 export const pipelineFromObject = ({name}: PipelineObject) => {
@@ -897,5 +903,19 @@ export const listDatumRequestFromObject = ({
   if (input) {
     request.setInput(inputFromObject(input));
   }
+  return request;
+};
+
+export const restartDatumRequestFromObject = ({
+  job,
+  dataFilters,
+}: RestartDatumRequestObject) => {
+  const request = new RestartDatumRequest();
+
+  request.setJob(jobFromObject(job));
+  if (dataFilters) {
+    request.setDataFiltersList(dataFilters);
+  }
+
   return request;
 };

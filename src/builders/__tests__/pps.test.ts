@@ -1,4 +1,8 @@
-import {DatumState, ProcessStats} from '@pachyderm/proto/pb/pps/pps_pb';
+import {
+  DatumState,
+  ProcessStats,
+  RestartDatumRequest,
+} from '@pachyderm/proto/pb/pps/pps_pb';
 import {
   chunkSpecFromObject,
   cronInputFromObject,
@@ -28,6 +32,7 @@ import {
   processStatsFromObject,
   datumInfoFromObject,
   listDatumRequestFromObject,
+  restartDatumRequestFromObject,
 } from '../pps';
 
 describe('grpc/builders/pps', () => {
@@ -864,6 +869,21 @@ it('should create ListDatumRequest from an object with input specified', () => {
   expect(
     listDatumRequest.getInput()?.getUnionList()[0]?.getPfs()?.getName(),
   ).toBe('unionList');
+});
+
+it('should create RestartDatumRequest from an object', () => {
+  const restartDatumRequest = restartDatumRequestFromObject({
+    job: {
+      id: '63d8d0fc65594c38980686b91b052293',
+      pipeline: {name: 'edges'},
+    },
+    dataFilters: ['/liberty.png'],
+  });
+  expect(restartDatumRequest.getJob()?.getId()).toBe(
+    '63d8d0fc65594c38980686b91b052293',
+  );
+  expect(restartDatumRequest.getJob()?.getPipeline()?.getName()).toBe('edges');
+  expect(restartDatumRequest.getDataFiltersList()[0]).toBe('/liberty.png');
 });
 
 it('should create InspectJobRequest from an object with defaults to wait and display all details', () => {

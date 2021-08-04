@@ -41,6 +41,8 @@ import {
   datumFromObject,
   ListDatumRequestObject,
   listDatumRequestFromObject,
+  RestartDatumRequestObject,
+  restartDatumRequestFromObject,
 } from '../builders/pps';
 import {JobSetQueryArgs, JobQueryArgs, ServiceArgs} from '../lib/types';
 import {DEFAULT_JOBS_LIMIT} from '../services/constants/pps';
@@ -204,6 +206,23 @@ const pps = ({
       const stream = client.listDatum(listDatumRequest, credentialMetadata);
 
       return streamToObjectArray<DatumInfo, DatumInfo.AsObject>(stream);
+    },
+
+    restartDatum: (request: RestartDatumRequestObject) => {
+      return new Promise<Empty.AsObject>((resolve, reject) => {
+        const restartDatumRequest = restartDatumRequestFromObject(request);
+
+        client.restartDatum(
+          restartDatumRequest,
+          credentialMetadata,
+          (error) => {
+            if (error) {
+              return reject(error);
+            }
+            return resolve({});
+          },
+        );
+      });
     },
 
     getLogs: (request: GetLogsRequestObject) => {
