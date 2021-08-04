@@ -62,15 +62,15 @@ const checkForConfig = () => {
   let jc = {};
 
   jc = checkPachConfigEnvVar();
-  if (jc !== {}) {
+  if (Object.keys(jc).length !== 0) {
     return jc;
   }
   jc = checkPachConfigSpout();
-  if (jc !== {}) {
+  if (Object.keys(jc).length !== 0) {
     return jc;
   }
   jc = checkPachConfigLocal();
-  if (jc !== {}) {
+  if (Object.keys(jc).length !== 0) {
     return jc;
   }
 
