@@ -341,9 +341,12 @@ const pps = ({
       });
     },
 
+    // TODO: fix to support encoding of a k8s secret
     createSecret: (params: CreateSecretRequest.AsObject['file']) => {
       return new Promise<Empty.AsObject>((resolve, reject) => {
-        const createSecretRequest = new CreateSecretRequest().setFile(params);
+        const createSecretRequest = new CreateSecretRequest().setFile(
+          params.toString(),
+        );
         client.createSecret(
           createSecretRequest,
           credentialMetadata,
