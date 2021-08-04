@@ -22,6 +22,11 @@ import {
   StartPipelineRequest,
   StopPipelineRequest,
   RunCronRequest,
+  CreateSecretRequest,
+  DeleteSecretRequest,
+  SecretInfo,
+  SecretInfos,
+  InspectSecretRequest,
 } from '@pachyderm/proto/pb/pps/pps_pb';
 
 import {
@@ -55,6 +60,8 @@ import {
   deletePipelineRequestFromObject,
   DeletePipelineRequestObject,
   PipelineObject,
+  SecretObject,
+  secretFromObject,
 } from '../builders/pps';
 import {JobSetQueryArgs, JobQueryArgs, ServiceArgs} from '../lib/types';
 import {DEFAULT_JOBS_LIMIT} from '../services/constants/pps';
@@ -331,6 +338,69 @@ const pps = ({
           }
           return resolve({});
         });
+      });
+    },
+
+    createSecret: (params: CreateSecretRequest.AsObject['file']) => {
+      return new Promise<Empty.AsObject>((resolve, reject) => {
+        const createSecretRequest = new CreateSecretRequest().setFile(params);
+        client.createSecret(
+          createSecretRequest,
+          credentialMetadata,
+          (error) => {
+            if (error) {
+              return reject(error);
+            }
+            return resolve({});
+          },
+        );
+      });
+    },
+
+    deleteSecret: (params: SecretObject) => {
+      return new Promise<Empty.AsObject>((resolve, reject) => {
+        const deleteeSecretRequest = new DeleteSecretRequest().setSecret(
+          secretFromObject(params),
+        );
+        client.deleteSecret(
+          deleteeSecretRequest,
+          credentialMetadata,
+          (error) => {
+            if (error) {
+              return reject(error);
+            }
+            return resolve({});
+          },
+        );
+      });
+    },
+
+    listSecret: () => {
+      return new Promise<SecretInfos.AsObject>((resolve, reject) => {
+        client.listSecret(new Empty(), credentialMetadata, (error, res) => {
+          if (error) {
+            return reject(error);
+          }
+          return resolve(res.toObject());
+        });
+      });
+    },
+
+    inspectSecret: (params: SecretObject) => {
+      return new Promise<SecretInfo.AsObject>((resolve, reject) => {
+        const inspectSecretRequest = new InspectSecretRequest().setSecret(
+          secretFromObject(params),
+        );
+        client.inspectSecret(
+          inspectSecretRequest,
+          credentialMetadata,
+          (error, res) => {
+            if (error) {
+              return reject(error);
+            }
+            return resolve(res.toObject());
+          },
+        );
       });
     },
 

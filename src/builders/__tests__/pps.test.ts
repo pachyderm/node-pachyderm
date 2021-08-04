@@ -37,6 +37,7 @@ import {
   inspectPipelineRequestFromObject,
   listPipelineRequestFromObject,
   deletePipelineRequestFromObject,
+  secretFromObject,
 } from '../pps';
 
 describe('grpc/builders/pps', () => {
@@ -46,6 +47,13 @@ describe('grpc/builders/pps', () => {
     });
 
     expect(pipeline.getName()).toBe('testPipeline');
+  });
+
+  it('should create a Secret from an object', () => {
+    const secret = secretFromObject({
+      name: 'canyoukeepasecret',
+    });
+    expect(secret.getName()).toBe('canyoukeepasecret');
   });
 
   it('should create SecretMount from an object', () => {

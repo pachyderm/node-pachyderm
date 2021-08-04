@@ -40,6 +40,7 @@ import {
   ListPipelineRequest,
   RunPipelineRequest,
   DeletePipelineRequest,
+  Secret,
 } from '@pachyderm/proto/pb/pps/pps_pb';
 
 import {
@@ -349,6 +350,18 @@ export type DeletePipelineRequestObject = {
   all?: DeletePipelineRequest.AsObject['all'];
   force?: DeletePipelineRequest.AsObject['force'];
   keepRepo?: DeletePipelineRequest.AsObject['keepRepo'];
+};
+
+export type SecretObject = {
+  name: Secret.AsObject['name'];
+};
+
+export const secretFromObject = ({name}: SecretObject) => {
+  const secret = new Secret();
+
+  secret.setName(name);
+
+  return secret;
 };
 
 export const pipelineFromObject = ({name}: PipelineObject) => {
