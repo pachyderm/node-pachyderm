@@ -34,6 +34,7 @@ import {
   listDatumRequestFromObject,
   restartDatumRequestFromObject,
   createPipelineRequestFromObject,
+  inspectPipelineRequestFromObject,
 } from '../pps';
 
 describe('grpc/builders/pps', () => {
@@ -1082,6 +1083,27 @@ it('should create CreatePipelineRequest from an object with defaults', () => {
   //TODO: test metadata returns
   expect(createPipelineRequest.getReprocessSpec()).toBe('');
   expect(createPipelineRequest.getAutoscaling()).toBe(false);
+});
+
+it('should create InspectPipelineRequest from an object with defaults to display details', () => {
+  const inspectPipelineRequest = inspectPipelineRequestFromObject({
+    pipeline: {
+      name: 'testPipeline',
+    },
+  });
+  expect(inspectPipelineRequest.getPipeline()?.getName()).toBe('testPipeline');
+  expect(inspectPipelineRequest.getDetails()).toBe(true);
+});
+
+it('should create InspectPipelineRequest from an object with details set to false', () => {
+  const inspectPipelineRequest = inspectPipelineRequestFromObject({
+    pipeline: {
+      name: 'testPipeline',
+    },
+    details: false,
+  });
+  expect(inspectPipelineRequest.getPipeline()?.getName()).toBe('testPipeline');
+  expect(inspectPipelineRequest.getDetails()).toBe(false);
 });
 
 it('should create InspectJobRequest from an object with defaults to wait and display all details', () => {

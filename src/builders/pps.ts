@@ -36,6 +36,7 @@ import {
   RestartDatumRequest,
   CreatePipelineRequest,
   Metadata,
+  InspectPipelineRequest,
 } from '@pachyderm/proto/pb/pps/pps_pb';
 
 import {
@@ -326,6 +327,11 @@ export type StopJobRequestObject = {
 export type RestartDatumRequestObject = {
   job: JobObject;
   dataFilters: RestartDatumRequest.AsObject['dataFiltersList'];
+};
+
+export type InspectPipelineRequestObject = {
+  pipeline: PipelineObject;
+  details?: InspectPipelineRequest.AsObject['details'];
 };
 
 export const pipelineFromObject = ({name}: PipelineObject) => {
@@ -1080,6 +1086,18 @@ export const restartDatumRequestFromObject = ({
   if (dataFilters) {
     request.setDataFiltersList(dataFilters);
   }
+
+  return request;
+};
+
+export const inspectPipelineRequestFromObject = ({
+  pipeline,
+  details = true,
+}: InspectPipelineRequestObject) => {
+  const request = new InspectPipelineRequest();
+
+  request.setPipeline(pipelineFromObject(pipeline));
+  request.setDetails(details);
 
   return request;
 };

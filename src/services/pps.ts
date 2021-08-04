@@ -45,6 +45,8 @@ import {
   restartDatumRequestFromObject,
   CreatePipelineRequestObject,
   createPipelineRequestFromObject,
+  InspectPipelineRequestObject,
+  inspectPipelineRequestFromObject,
 } from '../builders/pps';
 import {JobSetQueryArgs, JobQueryArgs, ServiceArgs} from '../lib/types';
 import {DEFAULT_JOBS_LIMIT} from '../services/constants/pps';
@@ -100,12 +102,13 @@ const pps = ({
       return streamToObjectArray<JobInfo, JobInfo.AsObject>(stream);
     },
 
-    inspectPipeline: (id: string) => {
+    inspectPipeline: (request: InspectPipelineRequestObject) => {
       return new Promise<PipelineInfo.AsObject>((resolve, reject) => {
+        const inspectPipelineRequest =
+          inspectPipelineRequestFromObject(request);
+
         client.inspectPipeline(
-          new InspectPipelineRequest()
-            .setPipeline(pipelineFromObject({name: id}))
-            .setDetails(true),
+          inspectPipelineRequest,
           credentialMetadata,
           (error, res) => {
             if (error) {
