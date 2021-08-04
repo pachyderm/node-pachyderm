@@ -26,6 +26,7 @@ import {
   JobSet,
   ListJobRequest,
   SubscribeJobRequest,
+  StopJobRequest,
 } from '@pachyderm/proto/pb/pps/pps_pb';
 
 import {
@@ -240,6 +241,11 @@ export type ListJobRequestObject = {
 export type SubscribeJobRequestObject = {
   pipeline: PipelineObject;
   details?: SubscribeJobRequest.AsObject['details'];
+};
+
+export type StopJobRequestObject = {
+  job: JobObject;
+  reason?: StopJobRequest.AsObject['reason'];
 };
 
 export const pipelineFromObject = ({name}: PipelineObject) => {
@@ -774,5 +780,17 @@ export const subscribeJobRequestFromObject = ({
   if (details) {
     request.setDetails(details);
   }
+  return request;
+};
+
+export const stopJobRequestFromObject = ({
+  job,
+  reason = '',
+}: StopJobRequestObject) => {
+  const request = new StopJobRequest();
+
+  request.setJob(jobFromObject(job));
+  request.setReason(reason);
+
   return request;
 };

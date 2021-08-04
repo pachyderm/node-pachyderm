@@ -22,6 +22,7 @@ import {
   inspectJobSetRequestFromObject,
   listJobRequestFromObject,
   subscribeJobRequestFromObject,
+  stopJobRequestFromObject,
 } from '../pps';
 
 describe('grpc/builders/pps', () => {
@@ -778,4 +779,33 @@ it('should create SubscribeJobRequest from an object with details set to false',
   });
   expect(subscribeJobRequest.getPipeline()?.getName()).toBe('edges');
   expect(subscribeJobRequest.getDetails()).toBe(false);
+});
+
+it('should create a StopJobRequest from an object with reason set to empty by default', () => {
+  const stopJobRequest = stopJobRequestFromObject({
+    job: {
+      id: '63d8d0fc65594c38980686b91b052293',
+      pipeline: {name: 'edges'},
+    },
+  });
+  expect(stopJobRequest.getJob()?.getId()).toBe(
+    '63d8d0fc65594c38980686b91b052293',
+  );
+  expect(stopJobRequest.getJob()?.getPipeline()?.getName()).toBe('edges');
+  expect(stopJobRequest.getReason()).toBe('');
+});
+
+it('should create a StopJobRequest from an object with a reason set', () => {
+  const stopJobRequest = stopJobRequestFromObject({
+    job: {
+      id: '63d8d0fc65594c38980686b91b052293',
+      pipeline: {name: 'edges'},
+    },
+    reason: 'neato',
+  });
+  expect(stopJobRequest.getJob()?.getId()).toBe(
+    '63d8d0fc65594c38980686b91b052293',
+  );
+  expect(stopJobRequest.getJob()?.getPipeline()?.getName()).toBe('edges');
+  expect(stopJobRequest.getReason()).toBe('neato');
 });

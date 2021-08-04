@@ -16,6 +16,7 @@ import {
   JobSetInfo,
   DeleteJobRequest,
   Job,
+  StopJobRequest,
 } from '@pachyderm/proto/pb/pps/pps_pb';
 
 import {
@@ -32,6 +33,8 @@ import {
   subscribeJobRequestFromObject,
   jobFromObject,
   JobObject,
+  StopJobRequestObject,
+  stopJobRequestFromObject,
 } from '../builders/pps';
 import {JobSetQueryArgs, JobQueryArgs, ServiceArgs} from '../lib/types';
 import {DEFAULT_JOBS_LIMIT} from '../services/constants/pps';
@@ -150,6 +153,19 @@ const pps = ({
         );
 
         client.deleteJob(deleteJobRequest, credentialMetadata, (error) => {
+          if (error) {
+            return reject(error);
+          }
+          return resolve({});
+        });
+      });
+    },
+
+    stopJob: (request: StopJobRequestObject) => {
+      return new Promise<Empty.AsObject>((resolve, reject) => {
+        const stopJobRequest = stopJobRequestFromObject(request);
+
+        client.stopJob(stopJobRequest, credentialMetadata, (error) => {
           if (error) {
             return reject(error);
           }
