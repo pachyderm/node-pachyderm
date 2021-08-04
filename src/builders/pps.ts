@@ -38,6 +38,8 @@ import {
   Metadata,
   InspectPipelineRequest,
   ListPipelineRequest,
+  RunPipelineRequest,
+  DeletePipelineRequest,
 } from '@pachyderm/proto/pb/pps/pps_pb';
 
 import {
@@ -340,6 +342,13 @@ export type ListPipelineRequestObject = {
   history?: ListPipelineRequest.AsObject['history'];
   details?: ListPipelineRequest.AsObject['details'];
   jqfilter?: ListPipelineRequest.AsObject['jqfilter'];
+};
+
+export type DeletePipelineRequestObject = {
+  pipeline: PipelineObject;
+  all?: DeletePipelineRequest.AsObject['all'];
+  force?: DeletePipelineRequest.AsObject['force'];
+  keepRepo?: DeletePipelineRequest.AsObject['keepRepo'];
 };
 
 export const pipelineFromObject = ({name}: PipelineObject) => {
@@ -1125,6 +1134,22 @@ export const listPipelineRequestFromObject = ({
   request.setHistory(history);
   request.setDetails(details);
   request.setJqfilter(jqfilter);
+
+  return request;
+};
+
+export const deletePipelineRequestFromObject = ({
+  pipeline,
+  all = false,
+  force = false,
+  keepRepo = false,
+}: DeletePipelineRequestObject) => {
+  const request = new DeletePipelineRequest();
+
+  request.setPipeline(pipelineFromObject(pipeline));
+  request.setAll(all);
+  request.setForce(force);
+  request.setKeepRepo(keepRepo);
 
   return request;
 };

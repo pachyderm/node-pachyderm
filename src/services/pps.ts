@@ -49,6 +49,8 @@ import {
   inspectPipelineRequestFromObject,
   ListPipelineRequestObject,
   listPipelineRequestFromObject,
+  deletePipelineRequestFromObject,
+  DeletePipelineRequestObject,
 } from '../builders/pps';
 import {JobSetQueryArgs, JobQueryArgs, ServiceArgs} from '../lib/types';
 import {DEFAULT_JOBS_LIMIT} from '../services/constants/pps';
@@ -236,6 +238,23 @@ const pps = ({
 
         client.createPipeline(
           createPipelineRequest,
+          credentialMetadata,
+          (error) => {
+            if (error) {
+              return reject(error);
+            }
+            return resolve({});
+          },
+        );
+      });
+    },
+
+    deletePipeline: (request: DeletePipelineRequestObject) => {
+      return new Promise<Empty.AsObject>((resolve, reject) => {
+        const deletePipelineRequest = deletePipelineRequestFromObject(request);
+
+        client.deletePipeline(
+          deletePipelineRequest,
           credentialMetadata,
           (error) => {
             if (error) {

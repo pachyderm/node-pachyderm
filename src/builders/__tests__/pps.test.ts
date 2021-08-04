@@ -36,6 +36,7 @@ import {
   createPipelineRequestFromObject,
   inspectPipelineRequestFromObject,
   listPipelineRequestFromObject,
+  deletePipelineRequestFromObject,
 } from '../pps';
 
 describe('grpc/builders/pps', () => {
@@ -1155,6 +1156,57 @@ it('should create ListPipelineRequest from an object with a jq filter', () => {
   expect(listPipelineRequest.getHistory()).toBe(0);
   expect(listPipelineRequest.getDetails()).toBe(true);
   expect(listPipelineRequest.getJqfilter()).toBe('testfilter');
+});
+
+it('should create DeletePipelineRequest from an object with defaults', () => {
+  const deletePipelineRequest = deletePipelineRequestFromObject({
+    pipeline: {
+      name: 'testPipeline',
+    },
+  });
+  expect(deletePipelineRequest.getPipeline()?.getName()).toBe('testPipeline');
+  expect(deletePipelineRequest.getAll()).toBe(false);
+  expect(deletePipelineRequest.getForce()).toBe(false);
+  expect(deletePipelineRequest.getKeepRepo()).toBe(false);
+});
+
+it('should create DeletePipelineRequest from an object with defaults', () => {
+  const deletePipelineRequest = deletePipelineRequestFromObject({
+    pipeline: {
+      name: 'testPipeline',
+    },
+    all: true,
+  });
+  expect(deletePipelineRequest.getPipeline()?.getName()).toBe('testPipeline');
+  expect(deletePipelineRequest.getAll()).toBe(true);
+  expect(deletePipelineRequest.getForce()).toBe(false);
+  expect(deletePipelineRequest.getKeepRepo()).toBe(false);
+});
+
+it('should create DeletePipelineRequest from an object with defaults', () => {
+  const deletePipelineRequest = deletePipelineRequestFromObject({
+    pipeline: {
+      name: 'testPipeline',
+    },
+    force: true,
+  });
+  expect(deletePipelineRequest.getPipeline()?.getName()).toBe('testPipeline');
+  expect(deletePipelineRequest.getAll()).toBe(false);
+  expect(deletePipelineRequest.getForce()).toBe(true);
+  expect(deletePipelineRequest.getKeepRepo()).toBe(false);
+});
+
+it('should create DeletePipelineRequest from an object with defaults', () => {
+  const deletePipelineRequest = deletePipelineRequestFromObject({
+    pipeline: {
+      name: 'testPipeline',
+    },
+    keepRepo: true,
+  });
+  expect(deletePipelineRequest.getPipeline()?.getName()).toBe('testPipeline');
+  expect(deletePipelineRequest.getAll()).toBe(false);
+  expect(deletePipelineRequest.getForce()).toBe(false);
+  expect(deletePipelineRequest.getKeepRepo()).toBe(true);
 });
 
 it('should create InspectJobRequest from an object with defaults to wait and display all details', () => {
