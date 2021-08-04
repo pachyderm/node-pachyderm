@@ -1,3 +1,4 @@
+import {File, FileInfo} from '@pachyderm/proto/pb/pfs/pfs_pb';
 import {
   CronInput,
   DatumSetSpec,
@@ -27,11 +28,20 @@ import {
   ListJobRequest,
   SubscribeJobRequest,
   StopJobRequest,
+  Datum,
+  DatumState,
+  ProcessStats,
+  DatumInfo,
+  ListDatumRequest,
 } from '@pachyderm/proto/pb/pps/pps_pb';
 
 import {
   commitFromObject,
   CommitObject,
+  fileFromObject,
+  fileInfoFromObject,
+  FileInfoObject,
+  FileObject,
   triggerFromObject,
   TriggerObject,
 } from '../builders/pfs';
@@ -198,6 +208,32 @@ export type JobObject = {
 
 export type JobSetObject = {
   id: JobSet.AsObject['id'];
+};
+
+export type DatumObject = {
+  job: JobObject;
+  id: Datum.AsObject['id'];
+};
+
+export type ProcessStatsObject = {
+  downloadTime: DurationObject;
+  processTime: DurationObject;
+  uploadTime: DurationObject;
+  downloadBytes: ProcessStats.AsObject['downloadBytes'];
+  uploadBytes: ProcessStats.AsObject['uploadBytes'];
+};
+
+export type DatumInfoObject = {
+  datum: DatumObject;
+  state: DatumState;
+  stats: ProcessStatsObject;
+  pfsState: FileObject;
+  data: FileInfoObject[];
+};
+
+export type ListDatumRequestObject = {
+  job?: JobObject;
+  input?: InputObject;
 };
 
 export type JobInfoObject = {
@@ -638,6 +674,56 @@ export const jobSetFromObject = ({id}: JobSetObject) => {
   return jobSet;
 };
 
+export const datumFromObject = ({job, id}: DatumObject) => {
+  const datum = new Datum();
+
+  datum.setJob(jobFromObject(job));
+  datum.setId(id);
+
+  return datum;
+};
+
+export const processStatsFromObject = ({
+  downloadTime,
+  processTime,
+  uploadTime,
+  downloadBytes,
+  uploadBytes,
+}: ProcessStatsObject) => {
+  const processStats = new ProcessStats();
+
+  processStats.setDownloadTime(durationFromObject(downloadTime));
+  processStats.setProcessTime(durationFromObject(processTime));
+  processStats.setUploadTime(durationFromObject(uploadTime));
+  processStats.setDownloadBytes(downloadBytes);
+  processStats.setUploadBytes(uploadBytes);
+
+  return processStats;
+};
+
+export const datumInfoFromObject = ({
+  datum,
+  state,
+  stats,
+  pfsState,
+  data,
+}: DatumInfoObject) => {
+  const datumInfo = new DatumInfo();
+
+  datumInfo.setDatum(datumFromObject(datum));
+  datumInfo.setState(state);
+  datumInfo.setStats(processStatsFromObject(stats));
+  datumInfo.setPfsState(fileFromObject(pfsState));
+  if (data) {
+    const transformedData = data.map((eachData) => {
+      return fileInfoFromObject(eachData);
+    });
+    datumInfo.setDataList(transformedData);
+  }
+
+  return datumInfo;
+};
+
 export const jobInfoFromObject = ({
   job: {id, pipeline: {name} = {name: ''}},
   createdAt,
@@ -792,5 +878,24 @@ export const stopJobRequestFromObject = ({
   request.setJob(jobFromObject(job));
   request.setReason(reason);
 
+  return request;
+};
+
+export const listDatumRequestFromObject = ({
+  job,
+  input,
+}: ListDatumRequestObject) => {
+  const request = new ListDatumRequest();
+  if (job !== undefined && input !== undefined) {
+    // TODO: check if there is a better approach with Pick
+    throw new Error('Only a job or an input can be set, got both');
+  }
+
+  if (job) {
+    request.setJob(jobFromObject(job));
+  }
+  if (input) {
+    request.setInput(inputFromObject(input));
+  }
   return request;
 };

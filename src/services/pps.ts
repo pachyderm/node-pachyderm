@@ -17,6 +17,8 @@ import {
   DeleteJobRequest,
   Job,
   StopJobRequest,
+  InspectDatumRequest,
+  DatumInfo,
 } from '@pachyderm/proto/pb/pps/pps_pb';
 
 import {
@@ -35,6 +37,10 @@ import {
   JobObject,
   StopJobRequestObject,
   stopJobRequestFromObject,
+  DatumObject,
+  datumFromObject,
+  ListDatumRequestObject,
+  listDatumRequestFromObject,
 } from '../builders/pps';
 import {JobSetQueryArgs, JobQueryArgs, ServiceArgs} from '../lib/types';
 import {DEFAULT_JOBS_LIMIT} from '../services/constants/pps';
@@ -172,6 +178,32 @@ const pps = ({
           return resolve({});
         });
       });
+    },
+
+    inspectDatum: (params: DatumObject) => {
+      const inspectDatumRequest = new InspectDatumRequest().setDatum(
+        datumFromObject(params),
+      );
+      return new Promise<DatumInfo.AsObject>((resolve, reject) => {
+        client.inspectDatum(
+          inspectDatumRequest,
+          credentialMetadata,
+          (error, res) => {
+            if (error) {
+              return reject(error);
+            }
+            return resolve(res.toObject());
+          },
+        );
+      });
+    },
+
+    listDatum: (request: ListDatumRequestObject) => {
+      const listDatumRequest = listDatumRequestFromObject(request);
+
+      const stream = client.listDatum(listDatumRequest, credentialMetadata);
+
+      return streamToObjectArray<DatumInfo, DatumInfo.AsObject>(stream);
     },
 
     getLogs: (request: GetLogsRequestObject) => {

@@ -1,3 +1,4 @@
+import {DatumState, ProcessStats} from '@pachyderm/proto/pb/pps/pps_pb';
 import {
   chunkSpecFromObject,
   cronInputFromObject,
@@ -23,6 +24,10 @@ import {
   listJobRequestFromObject,
   subscribeJobRequestFromObject,
   stopJobRequestFromObject,
+  datumFromObject,
+  processStatsFromObject,
+  datumInfoFromObject,
+  listDatumRequestFromObject,
 } from '../pps';
 
 describe('grpc/builders/pps', () => {
@@ -639,6 +644,226 @@ it('should create GetLogsRequestObject from a job request', () => {
   );
   expect(getLogsRequest.getSince()?.getSeconds()).toBe(564645);
   expect(getLogsRequest.getFollow()).toBe(true);
+});
+
+it('should create a Datum from an object', () => {
+  const datumObject = datumFromObject({
+    job: {
+      id: '23efw4ef098few0',
+      pipeline: {name: 'edges'},
+    },
+    id: '63d8d0fc65594c38980686b91b052293',
+  });
+  expect(datumObject.getJob()?.getId()).toBe('23efw4ef098few0');
+  expect(datumObject.getJob()?.getPipeline()?.getName()).toBe('edges');
+  expect(datumObject.getId()).toBe('63d8d0fc65594c38980686b91b052293');
+});
+
+it('should create a ProcessStats from an object', () => {
+  const processStats = processStatsFromObject({
+    downloadTime: {
+      seconds: 1614736724,
+      nanos: 344218476,
+    },
+    processTime: {
+      seconds: 1614736724,
+      nanos: 344218476,
+    },
+    uploadTime: {
+      seconds: 1614736724,
+      nanos: 344218476,
+    },
+    downloadBytes: 9000,
+    uploadBytes: 9001,
+  });
+  expect(processStats.getDownloadTime()?.getSeconds()).toBe(1614736724);
+  expect(processStats.getDownloadTime()?.getNanos()).toBe(344218476);
+  expect(processStats.getProcessTime()?.getSeconds()).toBe(1614736724);
+  expect(processStats.getProcessTime()?.getNanos()).toBe(344218476);
+  expect(processStats.getUploadTime()?.getSeconds()).toBe(1614736724);
+  expect(processStats.getUploadTime()?.getNanos()).toBe(344218476);
+  expect(processStats.getDownloadBytes()).toBe(9000);
+  expect(processStats.getUploadBytes()).toBe(9001);
+});
+
+it('should create DatumInfo from an object', () => {
+  const datumInfo = datumInfoFromObject({
+    datum: {
+      job: {
+        id: '23efw4ef098few0',
+        pipeline: {name: 'edges'},
+      },
+      id: '63d8d0fc65594c38980686b91b052293',
+    },
+    state: DatumState.SKIPPED,
+    stats: {
+      downloadTime: {
+        seconds: 1614736724,
+        nanos: 344218476,
+      },
+      processTime: {
+        seconds: 1614736724,
+        nanos: 344218476,
+      },
+      uploadTime: {
+        seconds: 1614736724,
+        nanos: 344218476,
+      },
+      downloadBytes: 9000,
+      uploadBytes: 9001,
+    },
+    pfsState: {
+      branch: {name: 'master', repo: {name: 'neato'}},
+      path: '/assets',
+    },
+    data: [
+      {
+        committed: {
+          seconds: 1615922718,
+          nanos: 449796812,
+        },
+        file: {
+          commitId: '1234567890',
+          path: '/assets',
+          branch: {name: 'master', repo: {name: 'neato'}},
+        },
+        fileType: 2,
+        hash: 'abcde12345',
+        sizeBytes: 123,
+      },
+    ],
+  });
+  expect(datumInfo.getDatum()?.getJob()?.getId()).toBe('23efw4ef098few0');
+  expect(datumInfo.getDatum()?.getJob()?.getPipeline()?.getName()).toBe(
+    'edges',
+  );
+  expect(datumInfo.getDatum()?.getId()).toBe(
+    '63d8d0fc65594c38980686b91b052293',
+  );
+  expect(datumInfo.getState()).toBe(3);
+  expect(datumInfo.getStats()?.getDownloadTime()?.getSeconds()).toBe(
+    1614736724,
+  );
+  expect(datumInfo.getStats()?.getDownloadTime()?.getNanos()).toBe(344218476);
+  expect(datumInfo.getStats()?.getProcessTime()?.getSeconds()).toBe(1614736724);
+  expect(datumInfo.getStats()?.getProcessTime()?.getNanos()).toBe(344218476);
+  expect(datumInfo.getStats()?.getUploadTime()?.getSeconds()).toBe(1614736724);
+  expect(datumInfo.getStats()?.getUploadTime()?.getNanos()).toBe(344218476);
+  expect(datumInfo.getStats()?.getDownloadBytes()).toBe(9000);
+  expect(datumInfo.getStats()?.getUploadBytes()).toBe(9001);
+  expect(datumInfo.getPfsState()?.getCommit()?.getBranch()?.getName()).toBe(
+    'master',
+  );
+  expect(
+    datumInfo.getPfsState()?.getCommit()?.getBranch()?.getRepo()?.getName(),
+  ).toBe('neato');
+  expect(datumInfo.getPfsState()?.getPath()).toBe('/assets');
+  expect(datumInfo.getDataList()[0]?.getCommitted()?.getSeconds()).toBe(
+    1615922718,
+  );
+  expect(datumInfo.getDataList()[0]?.getCommitted()?.getNanos()).toBe(
+    449796812,
+  );
+  expect(datumInfo.getDataList()[0].getFile()?.getPath()).toBe('/assets');
+  expect(datumInfo.getDataList()[0].getFile()?.getCommit()?.getId()).toBe(
+    '1234567890',
+  );
+  expect(
+    datumInfo.getDataList()[0].getFile()?.getCommit()?.getBranch()?.getName(),
+  ).toBe('master');
+  expect(
+    datumInfo
+      .getDataList()[0]
+      .getFile()
+      ?.getCommit()
+      ?.getBranch()
+      ?.getRepo()
+      ?.getName(),
+  ).toBe('neato');
+  expect(datumInfo.getDataList()[0].getFileType()).toBe(2);
+  expect(datumInfo.getDataList()[0].getHash()).toBe('abcde12345');
+  expect(datumInfo.getDataList()[0].getSizeBytes()).toBe(123);
+});
+
+it('should create ListDatumRequest from an object with job specified', () => {
+  const listDatumRequest = listDatumRequestFromObject({
+    job: {
+      id: '23efw4ef098few0',
+      pipeline: {name: 'edges'},
+    },
+  });
+  expect(listDatumRequest.getJob()?.getId()).toBe('23efw4ef098few0');
+  expect(listDatumRequest.getJob()?.getPipeline()?.getName()).toBe('edges');
+});
+
+it('should create ListDatumRequest from an object with input specified', () => {
+  const listDatumRequest = listDatumRequestFromObject({
+    input: {
+      pfs: {
+        name: 'imagesPfs',
+        repo: 'imagesRepo',
+        branch: 'master',
+      },
+      joinList: [
+        {
+          pfs: {
+            name: 'joinList',
+            repo: 'imagesRepo',
+            branch: 'master',
+          },
+        },
+      ],
+      groupList: [
+        {
+          pfs: {
+            name: 'groupList',
+            repo: 'imagesRepo',
+            branch: 'master',
+          },
+        },
+      ],
+      crossList: [
+        {
+          pfs: {
+            name: 'crossList',
+            repo: 'imagesRepo',
+            branch: 'master',
+          },
+        },
+      ],
+      unionList: [
+        {
+          pfs: {
+            name: 'unionList',
+            repo: 'imagesRepo',
+            branch: 'master',
+          },
+        },
+      ],
+      cron: {
+        name: 'imagesCron',
+        repo: 'imagesRepo',
+        commit: 'uweioruwejrij098w0e9r809we',
+        spec: '*/10 * * * *',
+        overwrite: true,
+      },
+    },
+  });
+  expect(listDatumRequest.getInput()?.getPfs()?.getName()).toBe('imagesPfs');
+  expect(listDatumRequest.getInput()?.getCron()?.getName()).toBe('imagesCron');
+
+  expect(
+    listDatumRequest.getInput()?.getJoinList()[0]?.getPfs()?.getName(),
+  ).toBe('joinList');
+  expect(
+    listDatumRequest.getInput()?.getGroupList()[0]?.getPfs()?.getName(),
+  ).toBe('groupList');
+  expect(
+    listDatumRequest.getInput()?.getCrossList()[0]?.getPfs()?.getName(),
+  ).toBe('crossList');
+  expect(
+    listDatumRequest.getInput()?.getUnionList()[0]?.getPfs()?.getName(),
+  ).toBe('unionList');
 });
 
 it('should create InspectJobRequest from an object with defaults to wait and display all details', () => {
