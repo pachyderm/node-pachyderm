@@ -43,6 +43,8 @@ import {
   listDatumRequestFromObject,
   RestartDatumRequestObject,
   restartDatumRequestFromObject,
+  CreatePipelineRequestObject,
+  createPipelineRequestFromObject,
 } from '../builders/pps';
 import {JobSetQueryArgs, JobQueryArgs, ServiceArgs} from '../lib/types';
 import {DEFAULT_JOBS_LIMIT} from '../services/constants/pps';
@@ -214,6 +216,23 @@ const pps = ({
 
         client.restartDatum(
           restartDatumRequest,
+          credentialMetadata,
+          (error) => {
+            if (error) {
+              return reject(error);
+            }
+            return resolve({});
+          },
+        );
+      });
+    },
+
+    createPipeline: (request: CreatePipelineRequestObject) => {
+      return new Promise<Empty.AsObject>((resolve, reject) => {
+        const createPipelineRequest = createPipelineRequestFromObject(request);
+
+        client.createPipeline(
+          createPipelineRequest,
           credentialMetadata,
           (error) => {
             if (error) {

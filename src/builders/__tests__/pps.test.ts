@@ -33,6 +33,7 @@ import {
   datumInfoFromObject,
   listDatumRequestFromObject,
   restartDatumRequestFromObject,
+  createPipelineRequestFromObject,
 } from '../pps';
 
 describe('grpc/builders/pps', () => {
@@ -884,6 +885,203 @@ it('should create RestartDatumRequest from an object', () => {
   );
   expect(restartDatumRequest.getJob()?.getPipeline()?.getName()).toBe('edges');
   expect(restartDatumRequest.getDataFiltersList()[0]).toBe('/liberty.png');
+});
+
+it('should create CreatePipelineRequest from an object with defaults', () => {
+  const createPipelineRequest = createPipelineRequestFromObject({
+    pipeline: {
+      name: 'edges',
+    },
+    transform: {
+      image: 'pachyderm/opencv',
+      cmdList: ['python3', '/edges.py'],
+    },
+    input: {
+      pfs: {
+        name: 'imagesPfs',
+        repo: 'imagesRepo',
+        branch: 'master',
+      },
+      joinList: [
+        {
+          pfs: {
+            name: 'joinList',
+            repo: 'imagesRepo',
+            branch: 'master',
+          },
+        },
+      ],
+      groupList: [
+        {
+          pfs: {
+            name: 'groupList',
+            repo: 'imagesRepo',
+            branch: 'master',
+          },
+        },
+      ],
+      crossList: [
+        {
+          pfs: {
+            name: 'crossList',
+            repo: 'imagesRepo',
+            branch: 'master',
+          },
+        },
+      ],
+      unionList: [
+        {
+          pfs: {
+            name: 'unionList',
+            repo: 'imagesRepo',
+            branch: 'master',
+          },
+        },
+      ],
+      cron: {
+        name: 'imagesCron',
+        repo: 'imagesRepo',
+        commit: 'uweioruwejrij098w0e9r809we',
+        spec: '*/10 * * * *',
+        overwrite: true,
+      },
+    },
+  });
+
+  expect(createPipelineRequest.getPipeline()?.getName()).toBe('edges');
+  expect(createPipelineRequest.getTransform()?.getImage()).toBe(
+    'pachyderm/opencv',
+  );
+  expect(createPipelineRequest.getTransform()?.getCmdList()).toStrictEqual([
+    'python3',
+    '/edges.py',
+  ]);
+  expect(createPipelineRequest.getTransform()?.getErrCmdList()).toStrictEqual(
+    [],
+  );
+  expect(createPipelineRequest.getTransform()?.getSecretsList()).toStrictEqual(
+    [],
+  );
+  expect(
+    createPipelineRequest.getTransform()?.getImagePullSecretsList(),
+  ).toStrictEqual([]);
+  expect(createPipelineRequest.getTransform()?.getStdinList()).toStrictEqual(
+    [],
+  );
+  expect(createPipelineRequest.getTransform()?.getErrStdinList()).toStrictEqual(
+    [],
+  );
+  expect(
+    createPipelineRequest.getTransform()?.getAcceptReturnCodeList(),
+  ).toStrictEqual([]);
+  expect(createPipelineRequest.getTransform()?.getDebug()).toBe(false);
+  expect(createPipelineRequest.getTransform()?.getUser()).toBe('');
+  expect(createPipelineRequest.getTransform()?.getWorkingDir()).toBe('');
+  expect(createPipelineRequest.getInput()?.getPfs()?.getName()).toBe(
+    'imagesPfs',
+  );
+  expect(createPipelineRequest.getInput()?.getCron()?.getName()).toBe(
+    'imagesCron',
+  );
+  expect(
+    createPipelineRequest.getInput()?.getJoinList()[0]?.getPfs()?.getName(),
+  ).toBe('joinList');
+  expect(
+    createPipelineRequest.getInput()?.getGroupList()[0]?.getPfs()?.getName(),
+  ).toBe('groupList');
+  expect(
+    createPipelineRequest.getInput()?.getCrossList()[0]?.getPfs()?.getName(),
+  ).toBe('crossList');
+  expect(
+    createPipelineRequest.getInput()?.getUnionList()[0]?.getPfs()?.getName(),
+  ).toBe('unionList');
+  expect(createPipelineRequest.getTfJob()).toBe(undefined);
+  expect(createPipelineRequest.getParallelismSpec()?.getConstant()).toBe(
+    undefined,
+  );
+  expect(createPipelineRequest.getEgress()?.getUrl()).toBe(undefined);
+  expect(createPipelineRequest.getUpdate()).toBe(false);
+  expect(createPipelineRequest.getOutputBranch()).toBe('');
+  expect(createPipelineRequest.getS3Out()).toBe(false);
+  expect(createPipelineRequest.getResourceRequests()?.getCpu()).toBe(undefined);
+  expect(createPipelineRequest.getResourceRequests()?.getMemory()).toBe(
+    undefined,
+  );
+  expect(createPipelineRequest.getResourceRequests()?.getGpu()?.getType()).toBe(
+    undefined,
+  );
+  expect(
+    createPipelineRequest.getResourceRequests()?.getGpu()?.getNumber(),
+  ).toBe(undefined);
+  expect(createPipelineRequest.getResourceRequests()?.getDisk()).toBe(
+    undefined,
+  );
+  expect(createPipelineRequest.getResourceLimits()?.getCpu()).toBe(undefined);
+  expect(createPipelineRequest.getResourceLimits()?.getMemory()).toBe(
+    undefined,
+  );
+  expect(createPipelineRequest.getResourceLimits()?.getGpu()?.getType()).toBe(
+    undefined,
+  );
+  expect(createPipelineRequest.getResourceLimits()?.getGpu()?.getNumber()).toBe(
+    undefined,
+  );
+  expect(createPipelineRequest.getResourceLimits()?.getDisk()).toBe(undefined);
+  expect(createPipelineRequest.getSidecarResourceLimits()?.getCpu()).toBe(
+    undefined,
+  );
+  expect(createPipelineRequest.getSidecarResourceLimits()?.getMemory()).toBe(
+    undefined,
+  );
+  expect(
+    createPipelineRequest.getSidecarResourceLimits()?.getGpu()?.getType(),
+  ).toBe(undefined);
+  expect(
+    createPipelineRequest.getSidecarResourceLimits()?.getGpu()?.getNumber(),
+  ).toBe(undefined);
+  expect(createPipelineRequest.getSidecarResourceLimits()?.getDisk()).toBe(
+    undefined,
+  );
+  expect(createPipelineRequest.getDescription()).toBe('');
+  expect(createPipelineRequest.getReprocess()).toBe(false);
+  expect(createPipelineRequest.getService()?.getInternalPort()).toBe(undefined);
+  expect(createPipelineRequest.getService()?.getExternalPort()).toBe(undefined);
+  expect(createPipelineRequest.getService()?.getIp()).toBe(undefined);
+  expect(createPipelineRequest.getService()?.getType()).toBe(undefined);
+  expect(
+    createPipelineRequest.getSpout()?.getService()?.getInternalPort(),
+  ).toBe(undefined);
+  expect(
+    createPipelineRequest.getSpout()?.getService()?.getExternalPort(),
+  ).toBe(undefined);
+  expect(createPipelineRequest.getSpout()?.getService()?.getIp()).toBe(
+    undefined,
+  );
+  expect(createPipelineRequest.getSpout()?.getService()?.getType()).toBe(
+    undefined,
+  );
+  expect(createPipelineRequest.getDatumSetSpec()?.getNumber()).toBe(undefined);
+  expect(createPipelineRequest.getDatumSetSpec()?.getSizeBytes()).toBe(
+    undefined,
+  );
+  expect(createPipelineRequest.getDatumTimeout()?.getSeconds()).toBe(undefined);
+  expect(createPipelineRequest.getDatumTimeout()?.getNanos()).toBe(undefined);
+  expect(createPipelineRequest.getJobTimeout()?.getSeconds()).toBe(undefined);
+  expect(createPipelineRequest.getJobTimeout()?.getNanos()).toBe(undefined);
+  expect(createPipelineRequest.getSalt()).toBe('');
+  expect(createPipelineRequest.getDatumTries()).toBe(0);
+  expect(
+    createPipelineRequest.getSchedulingSpec()?.getPriorityClassName(),
+  ).toBe(undefined);
+  expect(createPipelineRequest.getPodSpec()).toBe('');
+  expect(createPipelineRequest.getPodPatch()).toBe('');
+  expect(
+    createPipelineRequest.getSpecCommit()?.getBranch()?.getRepo()?.getName(),
+  ).toBe(undefined);
+  expect(createPipelineRequest.getSpecCommit()?.getId()).toBe(undefined);
+  //TODO: test metadata returns
+  expect(createPipelineRequest.getReprocessSpec()).toBe('');
+  expect(createPipelineRequest.getAutoscaling()).toBe(false);
 });
 
 it('should create InspectJobRequest from an object with defaults to wait and display all details', () => {

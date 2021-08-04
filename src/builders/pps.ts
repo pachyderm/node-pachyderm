@@ -34,6 +34,8 @@ import {
   DatumInfo,
   ListDatumRequest,
   RestartDatumRequest,
+  CreatePipelineRequest,
+  Metadata,
 } from '@pachyderm/proto/pb/pps/pps_pb';
 
 import {
@@ -235,6 +237,42 @@ export type DatumInfoObject = {
 export type ListDatumRequestObject = {
   job?: JobObject;
   input?: InputObject;
+};
+
+export type MetadataObject = {
+  annotations: Metadata.AsObject['annotationsMap'];
+  labels: Metadata.AsObject['labelsMap'];
+};
+
+export type CreatePipelineRequestObject = {
+  pipeline: PipelineObject;
+  tfJob?: TFJobObject;
+  transform: TransformObject;
+  parallelismSpec?: ParallelismSpecObject;
+  egress?: EgressObject;
+  update?: CreatePipelineRequest.AsObject['update'];
+  outputBranch?: CreatePipelineRequest.AsObject['outputBranch'];
+  s3Out?: CreatePipelineRequest.AsObject['s3Out'];
+  resourceRequests?: ResourceSpecObject;
+  resourceLimits?: ResourceSpecObject;
+  sidecarResourceLimits?: ResourceSpecObject;
+  input: InputObject;
+  description?: CreatePipelineRequest.AsObject['description'];
+  reprocess?: CreatePipelineRequest.AsObject['reprocess'];
+  service?: ServiceObject;
+  spout?: SpoutObject;
+  datumSetSpec?: DatumSetSpecObject;
+  datumTimeout?: DurationObject;
+  jobTimeout?: DurationObject;
+  salt?: CreatePipelineRequest.AsObject['salt'];
+  datumTries?: CreatePipelineRequest.AsObject['datumTries'];
+  schedulingSpec?: SchedulingSpecObject;
+  podSpec?: CreatePipelineRequest.AsObject['podSpec'];
+  podPatch?: CreatePipelineRequest.AsObject['podPatch'];
+  specCommit?: CommitObject;
+  metadata?: MetadataObject;
+  reprocessSpec?: CreatePipelineRequest.AsObject['reprocessSpec'];
+  autoscaling?: CreatePipelineRequest.AsObject['autoscaling'];
 };
 
 export type JobInfoObject = {
@@ -542,6 +580,132 @@ export const schedulingSpecFromObject = ({
   schedulingSpec.setPriorityClassName(priorityClassName);
 
   return schedulingSpec;
+};
+
+export const metadataFromObject = ({annotations, labels}: MetadataObject) => {
+  const metadata = new Metadata();
+
+  // TODO (proto setters for metadata):
+  // metadata.setAnnotations
+  // metadata.setLabels
+
+  return metadata;
+};
+
+export const createPipelineRequestFromObject = ({
+  pipeline,
+  tfJob,
+  transform,
+  parallelismSpec,
+  egress,
+  update,
+  outputBranch,
+  s3Out,
+  resourceRequests,
+  resourceLimits,
+  sidecarResourceLimits,
+  input,
+  description,
+  reprocess,
+  service,
+  spout,
+  datumSetSpec,
+  datumTimeout,
+  jobTimeout,
+  salt,
+  datumTries,
+  schedulingSpec,
+  podSpec,
+  podPatch,
+  specCommit,
+  metadata,
+  reprocessSpec,
+  autoscaling,
+}: CreatePipelineRequestObject) => {
+  const request = new CreatePipelineRequest();
+
+  request.setPipeline(pipelineFromObject(pipeline));
+  if (tfJob) {
+    request.setTfJob(tfJobFromObject(tfJob));
+  }
+  request.setTransform(transformFromObject(transform));
+  if (parallelismSpec) {
+    request.setParallelismSpec(parallelismSpecFromObject(parallelismSpec));
+  }
+  if (egress) {
+    request.setEgress(egressFromObject(egress));
+  }
+  if (update) {
+    request.setUpdate(update);
+  }
+  if (outputBranch) {
+    request.setOutputBranch(outputBranch);
+  }
+  if (s3Out) {
+    request.setS3Out(s3Out);
+  }
+  if (resourceRequests) {
+    request.setResourceRequests(resourceSpecFromObject(resourceRequests));
+  }
+  if (resourceLimits) {
+    request.setResourceLimits(resourceSpecFromObject(resourceLimits));
+  }
+  if (sidecarResourceLimits) {
+    request.setSidecarResourceLimits(
+      resourceSpecFromObject(sidecarResourceLimits),
+    );
+  }
+  request.setInput(inputFromObject(input));
+  if (description) {
+    request.setDescription(description);
+  }
+  if (reprocess) {
+    request.setReprocess(reprocess);
+  }
+  if (service) {
+    request.setService(serviceFromObject(service));
+  }
+  if (spout) {
+    request.setSpout(spoutFromObject(spout));
+  }
+  if (datumSetSpec) {
+    // TODO: Check if this is the same
+    request.setDatumSetSpec(chunkSpecFromObject(datumSetSpec));
+  }
+  if (datumTimeout) {
+    request.setDatumTimeout(durationFromObject(datumTimeout));
+  }
+  if (jobTimeout) {
+    request.setJobTimeout(durationFromObject(jobTimeout));
+  }
+  if (salt) {
+    request.setSalt(salt);
+  }
+  if (datumTries) {
+    request.setDatumTries(datumTries);
+  }
+  if (schedulingSpec) {
+    request.setSchedulingSpec(schedulingSpecFromObject(schedulingSpec));
+  }
+  if (podSpec) {
+    request.setPodSpec(podSpec);
+  }
+  if (podPatch) {
+    request.setPodPatch(podPatch);
+  }
+  if (specCommit) {
+    request.setSpecCommit(commitFromObject(specCommit));
+  }
+  if (metadata) {
+    request.setMetadata(metadataFromObject(metadata));
+  }
+  if (reprocessSpec) {
+    request.setReprocessSpec(reprocessSpec);
+  }
+  if (autoscaling) {
+    request.setAutoscaling(autoscaling);
+  }
+  return request;
 };
 
 export const pipelineInfoFromObject = ({
