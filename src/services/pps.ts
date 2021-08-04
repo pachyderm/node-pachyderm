@@ -47,6 +47,8 @@ import {
   createPipelineRequestFromObject,
   InspectPipelineRequestObject,
   inspectPipelineRequestFromObject,
+  ListPipelineRequestObject,
+  listPipelineRequestFromObject,
 } from '../builders/pps';
 import {JobSetQueryArgs, JobQueryArgs, ServiceArgs} from '../lib/types';
 import {DEFAULT_JOBS_LIMIT} from '../services/constants/pps';
@@ -67,10 +69,8 @@ const pps = ({
   const client = new APIClient(pachdAddress, channelCredentials);
 
   return {
-    listPipeline: (jq = '') => {
-      const listPipelineRequest = new ListPipelineRequest()
-        .setJqfilter(jq)
-        .setDetails(true);
+    listPipeline: (request: ListPipelineRequestObject) => {
+      const listPipelineRequest = listPipelineRequestFromObject(request);
       const stream = client.listPipeline(
         listPipelineRequest,
         credentialMetadata,

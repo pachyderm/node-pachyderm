@@ -35,6 +35,7 @@ import {
   restartDatumRequestFromObject,
   createPipelineRequestFromObject,
   inspectPipelineRequestFromObject,
+  listPipelineRequestFromObject,
 } from '../pps';
 
 describe('grpc/builders/pps', () => {
@@ -1104,6 +1105,56 @@ it('should create InspectPipelineRequest from an object with details set to fals
   });
   expect(inspectPipelineRequest.getPipeline()?.getName()).toBe('testPipeline');
   expect(inspectPipelineRequest.getDetails()).toBe(false);
+});
+
+it('should create ListPipelineRequest from an object with defaults', () => {
+  const listPipelineRequest = listPipelineRequestFromObject({});
+  expect(listPipelineRequest.getPipeline()?.getName()).toBe(undefined); // nil for all pipelines
+  expect(listPipelineRequest.getHistory()).toBe(0);
+  expect(listPipelineRequest.getDetails()).toBe(true);
+  expect(listPipelineRequest.getJqfilter()).toBe('');
+});
+
+it('should create ListPipelineRequest from an object with a pipeline set', () => {
+  const listPipelineRequest = listPipelineRequestFromObject({
+    pipeline: {
+      name: 'testPipeline',
+    },
+  });
+  expect(listPipelineRequest.getPipeline()?.getName()).toBe('testPipeline');
+  expect(listPipelineRequest.getHistory()).toBe(0);
+  expect(listPipelineRequest.getDetails()).toBe(true);
+  expect(listPipelineRequest.getJqfilter()).toBe('');
+});
+
+it('should create ListPipelineRequest from an object with history set to 1', () => {
+  const listPipelineRequest = listPipelineRequestFromObject({
+    history: 1,
+  });
+  expect(listPipelineRequest.getPipeline()?.getName()).toBe(undefined);
+  expect(listPipelineRequest.getHistory()).toBe(1);
+  expect(listPipelineRequest.getDetails()).toBe(true);
+  expect(listPipelineRequest.getJqfilter()).toBe('');
+});
+
+it('should create ListPipelineRequest from an object with details set to false', () => {
+  const listPipelineRequest = listPipelineRequestFromObject({
+    details: false,
+  });
+  expect(listPipelineRequest.getPipeline()?.getName()).toBe(undefined);
+  expect(listPipelineRequest.getHistory()).toBe(0);
+  expect(listPipelineRequest.getDetails()).toBe(false);
+  expect(listPipelineRequest.getJqfilter()).toBe('');
+});
+
+it('should create ListPipelineRequest from an object with a jq filter', () => {
+  const listPipelineRequest = listPipelineRequestFromObject({
+    jqfilter: 'testfilter',
+  });
+  expect(listPipelineRequest.getPipeline()?.getName()).toBe(undefined);
+  expect(listPipelineRequest.getHistory()).toBe(0);
+  expect(listPipelineRequest.getDetails()).toBe(true);
+  expect(listPipelineRequest.getJqfilter()).toBe('testfilter');
 });
 
 it('should create InspectJobRequest from an object with defaults to wait and display all details', () => {

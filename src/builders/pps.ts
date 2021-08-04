@@ -37,6 +37,7 @@ import {
   CreatePipelineRequest,
   Metadata,
   InspectPipelineRequest,
+  ListPipelineRequest,
 } from '@pachyderm/proto/pb/pps/pps_pb';
 
 import {
@@ -332,6 +333,13 @@ export type RestartDatumRequestObject = {
 export type InspectPipelineRequestObject = {
   pipeline: PipelineObject;
   details?: InspectPipelineRequest.AsObject['details'];
+};
+
+export type ListPipelineRequestObject = {
+  pipeline?: PipelineObject;
+  history?: ListPipelineRequest.AsObject['history'];
+  details?: ListPipelineRequest.AsObject['details'];
+  jqfilter?: ListPipelineRequest.AsObject['jqfilter'];
 };
 
 export const pipelineFromObject = ({name}: PipelineObject) => {
@@ -1098,6 +1106,25 @@ export const inspectPipelineRequestFromObject = ({
 
   request.setPipeline(pipelineFromObject(pipeline));
   request.setDetails(details);
+
+  return request;
+};
+
+export const listPipelineRequestFromObject = ({
+  pipeline,
+  history = 0,
+  details = true,
+  jqfilter = '',
+}: ListPipelineRequestObject) => {
+  const request = new ListPipelineRequest();
+
+  if (pipeline) {
+    request.setPipeline(pipelineFromObject(pipeline));
+  }
+
+  request.setHistory(history);
+  request.setDetails(details);
+  request.setJqfilter(jqfilter);
 
   return request;
 };
