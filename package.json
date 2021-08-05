@@ -25,6 +25,7 @@
   "dependencies": {
     "@grpc/grpc-js": "1.2.2",
     "@pachyderm/proto": "2.0.0-beta.2.0",
+    "certifi": "^14.5.15",
     "tar-stream": "2.2.0"
   },
   "devDependencies": {
