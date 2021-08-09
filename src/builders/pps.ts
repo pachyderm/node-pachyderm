@@ -1,9 +1,4 @@
 import {
-  CreateBranchRequest,
-  File,
-  FileInfo,
-} from '@pachyderm/proto/pb/pfs/pfs_pb';
-import {
   CronInput,
   DatumSetSpec,
   Egress,
@@ -42,7 +37,6 @@ import {
   Metadata,
   InspectPipelineRequest,
   ListPipelineRequest,
-  RunPipelineRequest,
   DeletePipelineRequest,
   Secret,
   CreateSecretRequest,

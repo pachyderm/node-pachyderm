@@ -2,27 +2,17 @@ import {ClientReadableStream} from '@grpc/grpc-js';
 import {Empty} from 'google-protobuf/google/protobuf/empty_pb';
 import {APIClient} from '@pachyderm/proto/pb/pps/pps_grpc_pb';
 import {
-  ListJobRequest,
-  ListPipelineRequest,
   PipelineInfo,
   JobInfo,
-  InspectJobRequest,
-  InspectPipelineRequest,
-  JobSet,
-  InspectJobSetRequest,
   LogMessage,
-  Pipeline,
   ListJobSetRequest,
   JobSetInfo,
   DeleteJobRequest,
-  Job,
-  StopJobRequest,
   InspectDatumRequest,
   DatumInfo,
   StartPipelineRequest,
   StopPipelineRequest,
   RunCronRequest,
-  CreateSecretRequest,
   DeleteSecretRequest,
   SecretInfo,
   SecretInfos,
@@ -65,7 +55,7 @@ import {
   CreateSecretRequestObject,
   createSecretRequestFromObject,
 } from '../builders/pps';
-import {JobSetQueryArgs, JobQueryArgs, ServiceArgs} from '../lib/types';
+import {ServiceArgs} from '../lib/types';
 import {DEFAULT_JOBS_LIMIT} from '../services/constants/pps';
 import streamToObjectArray from '../utils/streamToObjectArray';
 
