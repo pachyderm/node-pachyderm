@@ -62,6 +62,8 @@ import {
   PipelineObject,
   SecretObject,
   secretFromObject,
+  CreateSecretRequestObject,
+  createSecretRequestFromObject,
 } from '../builders/pps';
 import {JobSetQueryArgs, JobQueryArgs, ServiceArgs} from '../lib/types';
 import {DEFAULT_JOBS_LIMIT} from '../services/constants/pps';
@@ -341,12 +343,9 @@ const pps = ({
       });
     },
 
-    // TODO: fix to support encoding of a k8s secret
-    createSecret: (params: CreateSecretRequest.AsObject['file']) => {
+    createSecret: (request: CreateSecretRequestObject) => {
       return new Promise<Empty.AsObject>((resolve, reject) => {
-        const createSecretRequest = new CreateSecretRequest().setFile(
-          params.toString(),
-        );
+        const createSecretRequest = createSecretRequestFromObject(request);
         client.createSecret(
           createSecretRequest,
           credentialMetadata,

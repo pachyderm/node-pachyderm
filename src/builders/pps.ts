@@ -1,4 +1,8 @@
-import {File, FileInfo} from '@pachyderm/proto/pb/pfs/pfs_pb';
+import {
+  CreateBranchRequest,
+  File,
+  FileInfo,
+} from '@pachyderm/proto/pb/pfs/pfs_pb';
 import {
   CronInput,
   DatumSetSpec,
@@ -41,6 +45,7 @@ import {
   RunPipelineRequest,
   DeletePipelineRequest,
   Secret,
+  CreateSecretRequest,
 } from '@pachyderm/proto/pb/pps/pps_pb';
 
 import {
@@ -350,6 +355,13 @@ export type DeletePipelineRequestObject = {
   all?: DeletePipelineRequest.AsObject['all'];
   force?: DeletePipelineRequest.AsObject['force'];
   keepRepo?: DeletePipelineRequest.AsObject['keepRepo'];
+};
+
+export type CreateSecretRequestObject = {
+  name: SecretObject['name'];
+  data: CreateSecretRequest.AsObject['file'];
+  labels?: Metadata.AsObject['labelsMap'];
+  annotations?: Metadata.AsObject['annotationsMap'];
 };
 
 export type SecretObject = {
@@ -1163,6 +1175,36 @@ export const deletePipelineRequestFromObject = ({
   request.setAll(all);
   request.setForce(force);
   request.setKeepRepo(keepRepo);
+
+  return request;
+};
+
+export const createSecretRequestFromObject = ({
+  name,
+  data,
+  labels,
+  annotations,
+}: CreateSecretRequestObject) => {
+  const request = new CreateSecretRequest();
+
+  const encodedData: any = {};
+  Object.keys(JSON.parse(Buffer.from(data).toString('utf8'))).forEach(
+    (key: any) => {
+      encodedData[key] = Buffer.from(data[key].toString()).toString('base64');
+    },
+  );
+  const file = JSON.stringify({
+    kind: `Secret`,
+    apiVersion: `v1`,
+    metadata: {
+      name: `${name}`,
+      labels: `${labels}`,
+      annotations: `${annotations}`,
+    },
+    data: `${encodedData}`,
+  });
+
+  request.setFile(file);
 
   return request;
 };
