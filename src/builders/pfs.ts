@@ -4,6 +4,8 @@ import {
   CommitInfo,
   CreateRepoRequest,
   DeleteRepoRequest,
+  CommitSet,
+  InspectCommitSetRequest,
   File,
   FileInfo,
   FileType,
@@ -12,6 +14,13 @@ import {
   DeleteBranchRequest,
   Repo,
   Trigger,
+  StartCommitRequest,
+  FinishCommitRequest,
+  ListCommitRequest,
+  SubscribeCommitRequest,
+  InspectCommitRequest,
+  CommitState,
+  OriginKind,
 } from '@pachyderm/proto/pb/pfs/pfs_pb';
 
 import {timestampFromObject, TimestampObject} from '../builders/protobuf';
@@ -47,11 +56,48 @@ export type BranchObject = {
   repo?: RepoObject;
 };
 
-export type CreateBranchRequestObject = {
-  head: CommitObject;
+export type StartCommitRequestObject = {
   branch: BranchObject;
+  description?: StartCommitRequest.AsObject['description'];
+  parent?: CommitObject;
+};
+
+export type FinishCommitRequestObject = {
+  commit: CommitObject;
+  error?: FinishCommitRequest.AsObject['error'];
+  force?: FinishCommitRequest.AsObject['force'];
+  description?: FinishCommitRequest.AsObject['description'];
+};
+
+export type InspectCommitRequestObject = {
+  wait: CommitState;
+  commit: CommitObject;
+};
+
+export type ListCommitRequestObject = {
+  repo: RepoObject;
+  number?: ListCommitRequest.AsObject['number'];
+  reverse?: ListCommitRequest.AsObject['reverse'];
+  all?: ListCommitRequest.AsObject['all'];
+  originKind?: OriginKind;
+  from?: CommitObject;
+  to?: CommitObject;
+};
+
+export type SubscribeCommitRequestObject = {
+  repo: RepoObject;
+  branch?: SubscribeCommitRequest.AsObject['branch'];
+  state?: CommitState;
+  all?: SubscribeCommitRequest.AsObject['all'];
+  originKind?: OriginKind;
+  from?: CommitObject;
+};
+
+export type CreateBranchRequestObject = {
+  head?: CommitObject;
+  branch?: BranchObject;
   provenance: BranchObject[];
-  trigger: TriggerObject;
+  trigger?: TriggerObject;
   newCommitSet: CreateBranchRequest.AsObject['newCommitSet'];
 };
 
@@ -75,7 +121,18 @@ export type CommitInfoObject = {
   description?: CommitInfo.AsObject['description'];
   sizeBytes?: CommitInfo.Details.AsObject['sizeBytes'];
   started?: TimestampObject;
+  finishing?: TimestampObject;
   finished?: TimestampObject;
+  sizeBytesUpperBound?: CommitInfo.AsObject['sizeBytesUpperBound'];
+};
+
+export type CommitSetObject = {
+  id: CommitSet.AsObject['id'];
+};
+
+export type InspectCommitSetRequestObject = {
+  commitSet: CommitSetObject;
+  wait?: InspectCommitSetRequest.AsObject['wait'];
 };
 
 export type CreateRepoRequestObject = {
@@ -187,17 +244,140 @@ export const branchFromObject = ({name, repo}: BranchObject) => {
   return branch;
 };
 
+export const startCommitRequestFromObject = ({
+  branch,
+  parent,
+  description = '',
+}: StartCommitRequestObject) => {
+  const request = new StartCommitRequest();
+
+  request.setBranch(branchFromObject(branch));
+  if (parent) {
+    request.setParent(commitFromObject(parent));
+  }
+  request.setDescription(description);
+
+  return request;
+};
+
+export const finishCommitRequestFromObject = ({
+  error,
+  force = false,
+  commit,
+  description = '',
+}: FinishCommitRequestObject) => {
+  const request = new FinishCommitRequest();
+
+  request.setForce(force);
+  if (error) {
+    request.setError(error);
+  }
+  if (commit) {
+    request.setCommit(commitFromObject(commit));
+  }
+  request.setDescription(description);
+
+  return request;
+};
+
+export const inspectCommitRequestFromObject = ({
+  wait,
+  commit,
+}: InspectCommitRequestObject) => {
+  const request = new InspectCommitRequest();
+
+  if (wait) {
+    request.setWait(wait);
+  }
+
+  if (commit) {
+    request.setCommit(commitFromObject(commit));
+  }
+
+  return request;
+};
+
+export const listCommitRequestFromObject = ({
+  number,
+  all = true,
+  originKind,
+  from,
+  to,
+  repo,
+  reverse = false,
+}: ListCommitRequestObject) => {
+  const request = new ListCommitRequest();
+
+  if (repo) {
+    request.setRepo(repoFromObject(repo).setType('user'));
+  }
+
+  if (from) {
+    request.setFrom(commitFromObject(from));
+  }
+
+  if (to) {
+    request.setTo(commitFromObject(to));
+  }
+
+  if (number) {
+    request.setNumber(number);
+  }
+
+  if (originKind) {
+    request.setOriginKind(originKind);
+  }
+
+  request.setAll(all);
+  request.setReverse(reverse);
+
+  return request;
+};
+
+export const subscribeCommitRequestFromObject = ({
+  repo,
+  branch,
+  state,
+  all = true,
+  originKind,
+  from,
+}: SubscribeCommitRequestObject) => {
+  const request = new SubscribeCommitRequest();
+
+  request.setRepo(repoFromObject(repo).setType('user'));
+
+  if (from) {
+    request.setFrom(commitFromObject(from));
+  }
+
+  if (branch) {
+    request.setBranch(branch);
+  }
+
+  if (state) {
+    request.setState(state);
+  }
+
+  if (originKind) {
+    request.setOriginKind(originKind);
+  }
+
+  request.setAll(all);
+
+  return request;
+};
+
 export const createBranchRequestFromObject = ({
   head,
   branch,
   trigger,
-  provenance = [],
-  newCommitSet = false,
+  provenance,
+  newCommitSet,
 }: CreateBranchRequestObject) => {
   const request = new CreateBranchRequest();
 
-  request.setHead(commitFromObject(head));
-  request.setBranch(branchFromObject(branch));
+  if (head) request.setHead(commitFromObject(head));
+  if (branch) request.setBranch(branchFromObject(branch));
 
   if (provenance) {
     const provenanceArray: Branch[] = provenance.map((eachProvenanceObject) => {
@@ -206,7 +386,7 @@ export const createBranchRequestFromObject = ({
     request.setProvenanceList(provenanceArray);
   }
 
-  request.setTrigger(triggerFromObject(trigger));
+  if (trigger) request.setTrigger(triggerFromObject(trigger));
   request.setNewCommitSet(newCommitSet);
 
   return request;
@@ -218,7 +398,7 @@ export const listBranchRequestFromObject = ({
 }: ListBranchRequestObject) => {
   const request = new ListBranchRequest();
 
-  request.setRepo(new Repo().setName(repo.name || '').setType('user'));
+  request.setRepo(new Repo().setName(repo?.name || '').setType('user'));
   request.setReverse(reverse);
 
   return request;
@@ -248,14 +428,41 @@ export const commitInfoFromObject = ({
   description = '',
   sizeBytes = 0,
   started,
+  finishing,
   finished,
-}: CommitInfoObject) =>
-  new CommitInfo()
+  sizeBytesUpperBound,
+}: CommitInfoObject) => {
+  const commitInfo = new CommitInfo()
     .setCommit(commitFromObject(commit))
     .setDescription(description)
     .setDetails(new CommitInfo.Details().setSizeBytes(sizeBytes))
     .setStarted(started ? timestampFromObject(started) : undefined)
+    .setFinishing(finishing ? timestampFromObject(finishing) : undefined)
     .setFinished(finished ? timestampFromObject(finished) : undefined);
+  if (sizeBytesUpperBound) {
+    commitInfo.setSizeBytesUpperBound(sizeBytesUpperBound);
+  }
+  return commitInfo;
+};
+export const commitSetFromObject = ({id}: CommitSetObject) => {
+  const commitSet = new CommitSet();
+
+  commitSet.setId(id);
+
+  return commitSet;
+};
+
+export const inspectCommitSetRequestFromObject = ({
+  commitSet,
+  wait = true,
+}: InspectCommitSetRequestObject) => {
+  const request = new InspectCommitSetRequest();
+
+  request.setCommitSet(commitSetFromObject(commitSet));
+  request.setWait(wait);
+
+  return request;
+};
 
 export const createRepoRequestFromObject = ({
   repo,

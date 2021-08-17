@@ -1,11 +1,11 @@
 {
   "name": "@pachyderm/node-pachyderm",
-  "version": "0.1.0",
+  "version": "0.4.0",
   "description": "node client for pachyderm",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "test": "jest --max-workers=6",
+    "test": "jest --max-workers=1",
     "lint": "eslint 'src/**/*.{ts,tsx}'",
     "build": "npm run clean && npm run build:src && npm run build:types",
     "build:src": "tsc -p tsconfig.json",
@@ -24,7 +24,7 @@
   "homepage": "https://github.com/pachyderm/node-pachyderm#readme",
   "dependencies": {
     "@grpc/grpc-js": "1.2.2",
-    "@pachyderm/proto": "2.0.0-beta.2.0",
+    "@pachyderm/proto": "2.0.0-beta.5.0",
     "tar-stream": "2.2.0"
   },
   "devDependencies": {
