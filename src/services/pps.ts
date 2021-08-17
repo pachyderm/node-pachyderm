@@ -12,6 +12,7 @@ import {
   Input,
   ListPipelineRequest,
   Pipeline,
+  InspectPipelineRequest,
 } from '@pachyderm/proto/pb/pps/pps_pb';
 
 import {commitFromObject} from 'builders/pfs';
@@ -23,8 +24,6 @@ import {
   getLogsRequestFromObject,
   InspectPipelineRequestObject,
   inspectPipelineRequestFromObject,
-  ListPipelineRequestObject,
-  listPipelineRequestFromObject,
   deletePipelineRequestFromObject,
   DeletePipelineRequestObject,
   PipelineObject,
@@ -94,6 +93,13 @@ interface ListPipelineRequestOptions
   details?: ListPipelineRequest.AsObject['details'];
   jqfilter?: ListPipelineRequest.AsObject['jqfilter'];
 }
+
+interface InspectPipelineRequestOptions
+  extends Omit<InspectPipelineRequest.AsObject, 'pipeline' | 'details'> {
+  pipeline: Pipeline.AsObject;
+  details?: InspectPipelineRequest.AsObject['details'];
+}
+
 const pps = ({
   pachdAddress,
   channelCredentials,
@@ -190,21 +196,26 @@ const pps = ({
       return streamToObjectArray<PipelineInfo, PipelineInfo.AsObject>(stream);
     },
 
-    inspectPipeline: (request: InspectPipelineRequestObject) => {
+    inspectPipeline: (options: InspectPipelineRequestOptions) => {
       return new Promise<PipelineInfo.AsObject>((resolve, reject) => {
-        const inspectPipelineRequest =
-          inspectPipelineRequestFromObject(request);
+        const request = new InspectPipelineRequest();
 
-        client.inspectPipeline(
-          inspectPipelineRequest,
-          credentialMetadata,
-          (error, res) => {
-            if (error) {
-              return reject(error);
-            }
-            return resolve(res.toObject());
-          },
-        );
+        if (options.pipeline) {
+          request.setPipeline(pipelineFromObject(options.pipeline));
+        }
+
+        if (options.details) {
+          request.setDetails(options.details);
+        } else {
+          request.setDetails(true);
+        }
+
+        client.inspectPipeline(request, credentialMetadata, (error, res) => {
+          if (error) {
+            return reject(error);
+          }
+          return resolve(res.toObject());
+        });
       });
     },
 

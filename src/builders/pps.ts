@@ -332,11 +332,6 @@ export type RestartDatumRequestObject = {
   dataFilters: RestartDatumRequest.AsObject['dataFiltersList'];
 };
 
-export type InspectPipelineRequestObject = {
-  pipeline: PipelineObject;
-  details?: InspectPipelineRequest.AsObject['details'];
-};
-
 export type DeletePipelineRequestObject = {
   pipeline: PipelineObject;
   all?: DeletePipelineRequest.AsObject['all'];
@@ -1115,18 +1110,6 @@ export const restartDatumRequestFromObject = ({
   if (dataFilters) {
     request.setDataFiltersList(dataFilters);
   }
-
-  return request;
-};
-
-export const inspectPipelineRequestFromObject = ({
-  pipeline,
-  details = true,
-}: InspectPipelineRequestObject) => {
-  const request = new InspectPipelineRequest();
-
-  request.setPipeline(pipelineFromObject(pipeline));
-  request.setDetails(details);
 
   return request;
 };
