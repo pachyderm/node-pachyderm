@@ -3,46 +3,22 @@ import {Empty} from 'google-protobuf/google/protobuf/empty_pb';
 import {APIClient} from '@pachyderm/proto/pb/pps/pps_grpc_pb';
 import {
   PipelineInfo,
-  JobInfo,
   LogMessage,
-  ListJobSetRequest,
-  JobSetInfo,
-  DeleteJobRequest,
-  InspectDatumRequest,
-  DatumInfo,
   StartPipelineRequest,
   StopPipelineRequest,
   RunCronRequest,
-  DeleteSecretRequest,
-  SecretInfo,
-  SecretInfos,
-  InspectSecretRequest,
+  CreatePipelineRequest,
+  Transform,
+  Input,
 } from '@pachyderm/proto/pb/pps/pps_pb';
+
+import {commitFromObject} from 'builders/pfs';
+import {durationFromObject} from 'builders/protobuf';
 
 import {
   pipelineFromObject,
   GetLogsRequestObject,
   getLogsRequestFromObject,
-  InspectJobRequestObject,
-  inspectJobRequestFromObject,
-  InspectJobSetRequestObject,
-  inspectJobSetRequestFromObject,
-  ListJobRequestObject,
-  listJobRequestFromObject,
-  SubscribeJobRequestObject,
-  subscribeJobRequestFromObject,
-  jobFromObject,
-  JobObject,
-  StopJobRequestObject,
-  stopJobRequestFromObject,
-  DatumObject,
-  datumFromObject,
-  ListDatumRequestObject,
-  listDatumRequestFromObject,
-  RestartDatumRequestObject,
-  restartDatumRequestFromObject,
-  CreatePipelineRequestObject,
-  createPipelineRequestFromObject,
   InspectPipelineRequestObject,
   inspectPipelineRequestFromObject,
   ListPipelineRequestObject,
@@ -50,10 +26,15 @@ import {
   deletePipelineRequestFromObject,
   DeletePipelineRequestObject,
   PipelineObject,
-  SecretObject,
-  secretFromObject,
-  CreateSecretRequestObject,
-  createSecretRequestFromObject,
+  egressFromObject,
+  inputFromObject,
+  parallelismSpecFromObject,
+  chunkSpecFromObject,
+  resourceSpecFromObject,
+  schedulingSpecFromObject,
+  serviceFromObject,
+  spoutFromObject,
+  transformFromObject,
 } from '../builders/pps';
 import {ServiceArgs} from '../lib/types';
 import {DEFAULT_JOBS_LIMIT} from '../services/constants/pps';
@@ -66,6 +47,41 @@ export interface ListJobArgs extends ListArgs {
   pipelineId?: string | null;
 }
 
+interface CreatePipelineRequestOptions
+  extends Omit<
+    CreatePipelineRequest.AsObject,
+    | 'autoscaling'
+    | 'pipeline'
+    | 'description'
+    | 'transform'
+    | 'podPatch'
+    | 'podSpec'
+    | 'outputBranch'
+    | 'reprocess'
+    | 'reprocessSpec'
+    | 'tfJob'
+    | 'extension'
+    | 'update'
+    | 'salt'
+    | 's3Out'
+    | 'datumTries'
+  > {
+  autoscaling?: CreatePipelineRequest.AsObject['autoscaling'];
+  name: string;
+  transform: Transform.AsObject;
+  description?: CreatePipelineRequest.AsObject['description'];
+  input: Input.AsObject;
+  podPatch?: CreatePipelineRequest.AsObject['podPatch'];
+  podSpec?: CreatePipelineRequest.AsObject['podSpec'];
+  outputBranch?: CreatePipelineRequest.AsObject['outputBranch'];
+  reprocess?: CreatePipelineRequest.AsObject['reprocess'];
+  reprocessSpec?: CreatePipelineRequest.AsObject['reprocessSpec'];
+  update?: CreatePipelineRequest.AsObject['update'];
+  salt?: CreatePipelineRequest.AsObject['salt'];
+  s3Out?: CreatePipelineRequest.AsObject['s3Out'];
+  datumTries?: CreatePipelineRequest.AsObject['datumTries'];
+}
+
 const pps = ({
   pachdAddress,
   channelCredentials,
@@ -74,37 +90,73 @@ const pps = ({
   const client = new APIClient(pachdAddress, channelCredentials);
 
   return {
+    createPipeline: (options: CreatePipelineRequestOptions) => {
+      const request = new CreatePipelineRequest();
+      if (options.autoscaling) request.setAutoscaling(options.autoscaling);
+      if (options.datumSetSpec)
+        request.setDatumSetSpec(chunkSpecFromObject(options.datumSetSpec));
+      if (options.datumTimeout)
+        request.setDatumTimeout(durationFromObject(options.datumTimeout));
+      if (options.datumTries) request.setDatumTries(options.datumTries);
+      if (options.description) request.setDescription(options.description);
+      if (options.egress) request.setEgress(egressFromObject(options.egress));
+      if (options.input) request.setInput(inputFromObject(options.input));
+      if (options.jobTimeout)
+        request.setJobTimeout(durationFromObject(options.jobTimeout));
+      // if (options.metadata) request.setMetadata(options.metadata);
+      if (options.outputBranch) request.setOutputBranch(options.outputBranch);
+      if (options.parallelismSpec)
+        request.setParallelismSpec(
+          parallelismSpecFromObject(options.parallelismSpec),
+        );
+      request.setPipeline(pipelineFromObject({name: options.name}));
+      if (options.podPatch) request.setPodPatch(options.podPatch);
+      if (options.podSpec) request.setPodSpec(options.podSpec);
+      if (options.s3Out) request.setS3Out(options.s3Out);
+      if (options.reprocess) request.setReprocess(options.reprocess);
+      if (options.reprocessSpec)
+        request.setReprocessSpec(options.reprocessSpec);
+      if (options.resourceLimits)
+        request.setResourceLimits(
+          resourceSpecFromObject(options.resourceLimits),
+        );
+      if (options.resourceRequests)
+        request.setResourceRequests(
+          resourceSpecFromObject(options.resourceRequests),
+        );
+      if (options.schedulingSpec)
+        request.setSchedulingSpec(
+          schedulingSpecFromObject(options.schedulingSpec),
+        );
+      if (options.service)
+        request.setService(serviceFromObject(options.service));
+      if (options.sidecarResourceLimits)
+        request.setSidecarResourceLimits(
+          resourceSpecFromObject(options.sidecarResourceLimits),
+        );
+      if (options.spout) request.setSpout(spoutFromObject(options.spout));
+      if (options.update) request.setUpdate(options.update);
+      request.setTransform(transformFromObject(options.transform));
+      if (options.salt) request.setSalt(options.salt);
+      if (options.specCommit)
+        request.setSpecCommit(commitFromObject(options.specCommit));
+
+      return new Promise<Empty.AsObject>((resolve, reject) => {
+        client.createPipeline(request, (error) => {
+          if (error) return reject(error);
+          return resolve({});
+        });
+      });
+    },
     listPipeline: (request: ListPipelineRequestObject) => {
       const listPipelineRequest = listPipelineRequestFromObject(request);
+
       const stream = client.listPipeline(
         listPipelineRequest,
         credentialMetadata,
       );
 
       return streamToObjectArray<PipelineInfo, PipelineInfo.AsObject>(stream);
-    },
-
-    listJob: (request: ListJobRequestObject) => {
-      const listJobRequest = listJobRequestFromObject(request);
-
-      const stream = client.listJob(listJobRequest, credentialMetadata);
-
-      return streamToObjectArray<JobInfo, JobInfo.AsObject>(
-        stream,
-        // TODO: bring user opt in limits to be used here ||
-        DEFAULT_JOBS_LIMIT,
-      );
-    },
-
-    subscribeJob: (request: SubscribeJobRequestObject) => {
-      const subscribeJobRequest = subscribeJobRequestFromObject(request);
-
-      const stream = client.subscribeJob(
-        subscribeJobRequest,
-        credentialMetadata,
-      );
-
-      return streamToObjectArray<JobInfo, JobInfo.AsObject>(stream);
     },
 
     inspectPipeline: (request: InspectPipelineRequestObject) => {
@@ -120,133 +172,6 @@ const pps = ({
               return reject(error);
             }
             return resolve(res.toObject());
-          },
-        );
-      });
-    },
-
-    inspectJobSet: (request: InspectJobSetRequestObject) => {
-      const inspectJobSetRequest = inspectJobSetRequestFromObject(request);
-
-      const stream = client.inspectJobSet(
-        inspectJobSetRequest,
-        credentialMetadata,
-      );
-
-      return streamToObjectArray<JobInfo, JobInfo.AsObject>(stream);
-    },
-
-    listJobSet: (params: ListJobSetRequest.AsObject['details'] = false) => {
-      const listJobSetRequest = new ListJobSetRequest().setDetails(params);
-
-      const stream = client.listJobSet(listJobSetRequest, credentialMetadata);
-
-      return streamToObjectArray<JobSetInfo, JobSetInfo.AsObject>(
-        stream,
-        // TODO: bring user opt in limits to be used here ||
-        DEFAULT_JOBS_LIMIT,
-      );
-    },
-
-    inspectJob: (request: InspectJobRequestObject) => {
-      const inspectJobRequest = inspectJobRequestFromObject(request);
-      return new Promise<JobInfo.AsObject>((resolve, reject) => {
-        client.inspectJob(
-          inspectJobRequest,
-          credentialMetadata,
-          (error, res) => {
-            if (error) {
-              return reject(error);
-            }
-            return resolve(res.toObject());
-          },
-        );
-      });
-    },
-
-    deleteJob: (params: JobObject) => {
-      return new Promise<Empty.AsObject>((resolve, reject) => {
-        const deleteJobRequest = new DeleteJobRequest().setJob(
-          jobFromObject(params),
-        );
-
-        client.deleteJob(deleteJobRequest, credentialMetadata, (error) => {
-          if (error) {
-            return reject(error);
-          }
-          return resolve({});
-        });
-      });
-    },
-
-    stopJob: (request: StopJobRequestObject) => {
-      return new Promise<Empty.AsObject>((resolve, reject) => {
-        const stopJobRequest = stopJobRequestFromObject(request);
-
-        client.stopJob(stopJobRequest, credentialMetadata, (error) => {
-          if (error) {
-            return reject(error);
-          }
-          return resolve({});
-        });
-      });
-    },
-
-    inspectDatum: (params: DatumObject) => {
-      const inspectDatumRequest = new InspectDatumRequest().setDatum(
-        datumFromObject(params),
-      );
-      return new Promise<DatumInfo.AsObject>((resolve, reject) => {
-        client.inspectDatum(
-          inspectDatumRequest,
-          credentialMetadata,
-          (error, res) => {
-            if (error) {
-              return reject(error);
-            }
-            return resolve(res.toObject());
-          },
-        );
-      });
-    },
-
-    listDatum: (request: ListDatumRequestObject) => {
-      const listDatumRequest = listDatumRequestFromObject(request);
-
-      const stream = client.listDatum(listDatumRequest, credentialMetadata);
-
-      return streamToObjectArray<DatumInfo, DatumInfo.AsObject>(stream);
-    },
-
-    restartDatum: (request: RestartDatumRequestObject) => {
-      return new Promise<Empty.AsObject>((resolve, reject) => {
-        const restartDatumRequest = restartDatumRequestFromObject(request);
-
-        client.restartDatum(
-          restartDatumRequest,
-          credentialMetadata,
-          (error) => {
-            if (error) {
-              return reject(error);
-            }
-            return resolve({});
-          },
-        );
-      });
-    },
-
-    createPipeline: (request: CreatePipelineRequestObject) => {
-      return new Promise<Empty.AsObject>((resolve, reject) => {
-        const createPipelineRequest = createPipelineRequestFromObject(request);
-
-        client.createPipeline(
-          createPipelineRequest,
-          credentialMetadata,
-          (error) => {
-            if (error) {
-              return reject(error);
-            }
-            return resolve({});
           },
         );
       });
@@ -333,69 +258,6 @@ const pps = ({
       });
     },
 
-    createSecret: (request: CreateSecretRequestObject) => {
-      return new Promise<Empty.AsObject>((resolve, reject) => {
-        const createSecretRequest = createSecretRequestFromObject(request);
-        client.createSecret(
-          createSecretRequest,
-          credentialMetadata,
-          (error) => {
-            if (error) {
-              return reject(error);
-            }
-            return resolve({});
-          },
-        );
-      });
-    },
-
-    deleteSecret: (params: SecretObject) => {
-      return new Promise<Empty.AsObject>((resolve, reject) => {
-        const deleteeSecretRequest = new DeleteSecretRequest().setSecret(
-          secretFromObject(params),
-        );
-        client.deleteSecret(
-          deleteeSecretRequest,
-          credentialMetadata,
-          (error) => {
-            if (error) {
-              return reject(error);
-            }
-            return resolve({});
-          },
-        );
-      });
-    },
-
-    listSecret: () => {
-      return new Promise<SecretInfos.AsObject>((resolve, reject) => {
-        client.listSecret(new Empty(), credentialMetadata, (error, res) => {
-          if (error) {
-            return reject(error);
-          }
-          return resolve(res.toObject());
-        });
-      });
-    },
-
-    inspectSecret: (params: SecretObject) => {
-      return new Promise<SecretInfo.AsObject>((resolve, reject) => {
-        const inspectSecretRequest = new InspectSecretRequest().setSecret(
-          secretFromObject(params),
-        );
-        client.inspectSecret(
-          inspectSecretRequest,
-          credentialMetadata,
-          (error, res) => {
-            if (error) {
-              return reject(error);
-            }
-            return resolve(res.toObject());
-          },
-        );
-      });
-    },
-
     getLogs: (request: GetLogsRequestObject) => {
       const getLogsRequest = getLogsRequestFromObject(request);
       const stream = client.getLogs(getLogsRequest, credentialMetadata);
@@ -416,6 +278,17 @@ const pps = ({
           }
         },
       );
+    },
+
+    deleteAll: () => {
+      return new Promise<Empty.AsObject>((resolve, reject) => {
+        client.deleteAll(new Empty(), (error) => {
+          if (error) {
+            return reject(error);
+          }
+          return resolve({});
+        });
+      });
     },
   };
 };
