@@ -337,13 +337,6 @@ export type InspectPipelineRequestObject = {
   details?: InspectPipelineRequest.AsObject['details'];
 };
 
-export type ListPipelineRequestObject = {
-  pipeline?: PipelineObject;
-  history?: ListPipelineRequest.AsObject['history'];
-  details?: ListPipelineRequest.AsObject['details'];
-  jqfilter?: ListPipelineRequest.AsObject['jqfilter'];
-};
-
 export type DeletePipelineRequestObject = {
   pipeline: PipelineObject;
   all?: DeletePipelineRequest.AsObject['all'];
@@ -1134,25 +1127,6 @@ export const inspectPipelineRequestFromObject = ({
 
   request.setPipeline(pipelineFromObject(pipeline));
   request.setDetails(details);
-
-  return request;
-};
-
-export const listPipelineRequestFromObject = ({
-  pipeline,
-  history = 0,
-  details = true,
-  jqfilter = '',
-}: ListPipelineRequestObject) => {
-  const request = new ListPipelineRequest();
-
-  if (pipeline) {
-    request.setPipeline(pipelineFromObject(pipeline));
-  }
-
-  request.setHistory(history);
-  request.setDetails(details);
-  request.setJqfilter(jqfilter);
 
   return request;
 };

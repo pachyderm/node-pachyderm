@@ -10,6 +10,8 @@ import {
   CreatePipelineRequest,
   Transform,
   Input,
+  ListPipelineRequest,
+  Pipeline,
 } from '@pachyderm/proto/pb/pps/pps_pb';
 
 import {commitFromObject} from 'builders/pfs';
@@ -82,6 +84,16 @@ interface CreatePipelineRequestOptions
   datumTries?: CreatePipelineRequest.AsObject['datumTries'];
 }
 
+interface ListPipelineRequestOptions
+  extends Omit<
+    ListPipelineRequest.AsObject,
+    'pipeline' | 'history' | 'details' | 'jqfilter'
+  > {
+  pipeline?: Pipeline.AsObject;
+  history?: ListPipelineRequest.AsObject['history'];
+  details?: ListPipelineRequest.AsObject['details'];
+  jqfilter?: ListPipelineRequest.AsObject['jqfilter'];
+}
 const pps = ({
   pachdAddress,
   channelCredentials,
@@ -148,13 +160,32 @@ const pps = ({
         });
       });
     },
-    listPipeline: (request: ListPipelineRequestObject) => {
-      const listPipelineRequest = listPipelineRequestFromObject(request);
+    listPipeline: (options: ListPipelineRequestOptions) => {
+      const request = new ListPipelineRequest();
 
-      const stream = client.listPipeline(
-        listPipelineRequest,
-        credentialMetadata,
-      );
+      if (options.pipeline) {
+        request.setPipeline(pipelineFromObject(options.pipeline));
+      }
+
+      if (options.history) {
+        request.setHistory(options.history);
+      } else {
+        request.setHistory(0);
+      }
+
+      if (options.details) {
+        request.setDetails(options.details);
+      } else {
+        request.setDetails(true);
+      }
+
+      if (options.jqfilter) {
+        request.setJqfilter(options.jqfilter);
+      } else {
+        request.setJqfilter('');
+      }
+
+      const stream = client.listPipeline(request, credentialMetadata);
 
       return streamToObjectArray<PipelineInfo, PipelineInfo.AsObject>(stream);
     },
