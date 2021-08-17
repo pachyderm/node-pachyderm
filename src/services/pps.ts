@@ -13,6 +13,7 @@ import {
   ListPipelineRequest,
   Pipeline,
   InspectPipelineRequest,
+  DeletePipelineRequest,
 } from '@pachyderm/proto/pb/pps/pps_pb';
 
 import {commitFromObject} from 'builders/pfs';
@@ -98,6 +99,17 @@ interface InspectPipelineRequestOptions
   extends Omit<InspectPipelineRequest.AsObject, 'pipeline' | 'details'> {
   pipeline: Pipeline.AsObject;
   details?: InspectPipelineRequest.AsObject['details'];
+}
+
+interface DeletePipelineRequestOptions
+  extends Omit<
+    DeletePipelineRequest.AsObject,
+    'pipeline' | 'all' | 'force' | 'keepRepo'
+  > {
+  pipeline: Pipeline.AsObject;
+  all?: DeletePipelineRequest.AsObject['all'];
+  force?: DeletePipelineRequest.AsObject['force'];
+  keepRepo?: DeletePipelineRequest.AsObject['keepRepo'];
 }
 
 const pps = ({
@@ -272,20 +284,36 @@ const pps = ({
       });
     },
 
-    deletePipeline: (request: DeletePipelineRequestObject) => {
+    deletePipeline: (options: DeletePipelineRequestOptions) => {
       return new Promise<Empty.AsObject>((resolve, reject) => {
-        const deletePipelineRequest = deletePipelineRequestFromObject(request);
+        const request = new DeletePipelineRequest();
 
-        client.deletePipeline(
-          deletePipelineRequest,
-          credentialMetadata,
-          (error) => {
-            if (error) {
-              return reject(error);
-            }
-            return resolve({});
-          },
-        );
+        request.setPipeline(pipelineFromObject(options.pipeline));
+
+        if (options.all) {
+          request.setAll(options.all);
+        } else {
+          request.setAll(false);
+        }
+
+        if (options.force) {
+          request.setForce(options.force);
+        } else {
+          request.setForce(false);
+        }
+
+        if (options.keepRepo) {
+          request.setKeepRepo(options.keepRepo);
+        } else {
+          request.setKeepRepo(false);
+        }
+
+        client.deletePipeline(request, credentialMetadata, (error) => {
+          if (error) {
+            return reject(error);
+          }
+          return resolve({});
+        });
       });
     },
 

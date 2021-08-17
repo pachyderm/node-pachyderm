@@ -332,13 +332,6 @@ export type RestartDatumRequestObject = {
   dataFilters: RestartDatumRequest.AsObject['dataFiltersList'];
 };
 
-export type DeletePipelineRequestObject = {
-  pipeline: PipelineObject;
-  all?: DeletePipelineRequest.AsObject['all'];
-  force?: DeletePipelineRequest.AsObject['force'];
-  keepRepo?: DeletePipelineRequest.AsObject['keepRepo'];
-};
-
 export type CreateSecretRequestObject = {
   name: SecretObject['name'];
   data: CreateSecretRequest.AsObject['file'];
@@ -1110,22 +1103,6 @@ export const restartDatumRequestFromObject = ({
   if (dataFilters) {
     request.setDataFiltersList(dataFilters);
   }
-
-  return request;
-};
-
-export const deletePipelineRequestFromObject = ({
-  pipeline,
-  all = false,
-  force = false,
-  keepRepo = false,
-}: DeletePipelineRequestObject) => {
-  const request = new DeletePipelineRequest();
-
-  request.setPipeline(pipelineFromObject(pipeline));
-  request.setAll(all);
-  request.setForce(force);
-  request.setKeepRepo(keepRepo);
 
   return request;
 };
