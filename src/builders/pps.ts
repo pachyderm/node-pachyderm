@@ -31,8 +31,6 @@ import {
 import {
   commitFromObject,
   CommitObject,
-  fileFromObject,
-  fileInfoFromObject,
   FileInfoObject,
   FileObject,
   triggerFromObject,
