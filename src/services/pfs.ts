@@ -15,8 +15,6 @@ import {
   SquashCommitSetRequest,
   Commit,
   ClearCommitRequest,
-  AddFile,
-  ModifyFileRequest,
 } from '@pachyderm/proto/pb/pfs/pfs_pb';
 import {Empty} from 'google-protobuf/google/protobuf/empty_pb';
 import {BytesValue} from 'google-protobuf/google/protobuf/wrappers_pb';
@@ -368,32 +366,6 @@ const pfs = ({
             return reject(error);
           }
           return resolve({});
-        });
-      });
-    },
-    putFileFromURL: (commit: Commit.AsObject, path: string, url: string) => {
-      return new Promise<Empty.AsObject>((resolve, reject) => {
-        const stream = client.modifyFile((err) => {
-          if (err) reject(err);
-        });
-
-        stream
-          .on('close', () => {
-            resolve({});
-          })
-          .on('error', (error) => {
-            reject(error);
-          });
-
-        const addFile = new AddFile()
-          .setPath(path)
-          .setUrl(new AddFile.URLSource().setUrl(url));
-        const modifyFileRequest = new ModifyFileRequest()
-          .setSetCommit(commitFromObject(commit))
-          .setAddFile(addFile);
-
-        stream.write(modifyFileRequest, () => {
-          stream.end();
         });
       });
     },

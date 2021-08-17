@@ -1,13 +1,13 @@
-import {CommitState} from '@pachyderm/proto/pb/pfs/pfs_pb';
+import {CommitState, FileType} from '@pachyderm/proto/pb/pfs/pfs_pb';
 
 import client from 'client';
 
 describe('services/pfs', () => {
-  /*   afterAll(async () => {
+  afterAll(async () => {
     const pachClient = client({ssl: false, pachdAddress: 'localhost:30650'});
     const pfs = pachClient.pfs();
     await pfs.deleteAll();
-  }); */
+  });
   const createSandbox = async (name: string) => {
     const pachClient = client({ssl: false, pachdAddress: 'localhost:30650'});
     const pfs = pachClient.pfs();
@@ -18,18 +18,52 @@ describe('services/pfs', () => {
   };
   describe('listFile', () => {
     it('should return a list of files in the directory', async () => {
-      // TODO Implement putFile
+      const client = await createSandbox('listFile');
+      const commit = await client.pfs().startCommit({
+        branch: {name: 'master', repo: {name: 'listFile'}},
+      });
+
+      await client
+        .modifyFile()
+        .setCommit(commit)
+        .putFileFromURL('at-at.png', 'http://imgur.com/8MN9Kg0.png')
+        .end();
+
+      await client.pfs().finishCommit({commit});
+
+      const files = await client.pfs().listFile({
+        commitId: commit.id,
+        branch: {name: 'master', repo: {name: 'listFile'}},
+      });
+
+      expect(files).toHaveLength(1);
     });
   });
 
-  describe('getFile', () => {
-    it('should get the specified file', async () => {
-      // TODO Implement putFile
-    });
-  });
   describe('inspectFile', () => {
     it('should return details about the specified file', async () => {
-      // TODO Implement putFile
+      const client = await createSandbox('inspectRepo');
+      const commit = await client.pfs().startCommit({
+        branch: {name: 'master', repo: {name: 'inspectRepo'}},
+      });
+
+      await client
+        .modifyFile()
+        .setCommit(commit)
+        .putFileFromURL('at-at.png', 'http://imgur.com/8MN9Kg0.png')
+        .end();
+
+      await client.pfs().finishCommit({commit});
+      const file = await client.pfs().inspectFile({
+        commitId: commit.id,
+        path: '/at-at.png',
+        branch: {name: 'master', repo: {name: 'inspectRepo'}},
+      });
+
+      expect(file.file?.commit?.branch?.name).toEqual('master');
+      expect(file.file?.commit?.id).toEqual(commit.id);
+      expect(file.fileType).toEqual(FileType.FILE);
+      expect(file.sizeBytes).toEqual(80588);
     });
   });
   describe('listCommit', () => {
@@ -254,26 +288,6 @@ describe('services/pfs', () => {
 
       const updatedRepos = await client.pfs().listRepo();
       expect(updatedRepos).toHaveLength(0);
-    });
-  });
-
-  describe('putFileFromBytes', () => {
-    it.only('should add a file in byte format to a repo', async () => {
-      const client = await createSandbox('putFileFromBytes');
-      const commit = await client.pfs().startCommit({
-        branch: {name: 'master', repo: {name: 'putFileFromBytes'}},
-      });
-      await client
-        .pfs()
-        .putFileFromURL(commit, 'at-at.png', 'http://imgur.com/8MN9Kg0.png');
-
-      await client.pfs().finishCommit({commit});
-      const files = await client.pfs().listFile({
-        commitId: commit.id,
-        branch: {name: 'master', repo: {name: 'putFileFromBytes'}},
-      });
-
-      expect(files).toHaveLength(1);
     });
   });
 });
