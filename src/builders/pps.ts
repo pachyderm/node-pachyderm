@@ -89,7 +89,7 @@ export type ResourceSpecObject = {
 };
 
 export type PFSInputObject = {
-  name: PFSInput.AsObject['name'];
+  name?: PFSInput.AsObject['name'];
   repo: PFSInput.AsObject['repo'];
   branch: PFSInput.AsObject['branch'];
   commit?: PFSInput.AsObject['commit'];
@@ -330,7 +330,7 @@ export const pfsInputFromObject = ({
   trigger,
 }: PFSInputObject) => {
   const pfsInput = new PFSInput();
-  pfsInput.setName(name);
+  if (name) pfsInput.setName(name);
   pfsInput.setRepo(repo);
   pfsInput.setBranch(branch);
   pfsInput.setCommit(commit);
