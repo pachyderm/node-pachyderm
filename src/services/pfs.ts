@@ -16,45 +16,49 @@ import {
   Commit,
   ClearCommitRequest,
   ListCommitRequest,
+  Branch,
+  CreateBranchRequest,
+  InspectCommitSetRequest,
+  StartCommitRequest,
+  FinishCommitRequest,
+  CreateRepoRequest,
+  InspectCommitRequest,
+  SubscribeCommitRequest,
+  Repo,
+  ListBranchRequest,
+  DeleteBranchRequest,
+  DeleteRepoRequest,
 } from '@pachyderm/proto/pb/pfs/pfs_pb';
 import {Empty} from 'google-protobuf/google/protobuf/empty_pb';
 import {BytesValue} from 'google-protobuf/google/protobuf/wrappers_pb';
 
-import {ListCommitArgs} from 'lib/pfsTypes';
-
 import {
   commitSetFromObject,
   CommitSetObject,
-  createBranchRequestFromObject,
-  CreateBranchRequestObject,
-  listBranchRequestFromObject,
-  ListBranchRequestObject,
-  deleteBranchRequestFromObject,
-  DeleteBranchRequestObject,
-  createRepoRequestFromObject,
-  CreateRepoRequestObject,
-  deleteRepoRequestFromObject,
-  DeleteRepoRequestObject,
   fileFromObject,
   branchFromObject,
   FileObject,
-  inspectCommitSetRequestFromObject,
-  InspectCommitSetRequestObject,
   repoFromObject,
   RepoObject,
   BranchObject,
-  StartCommitRequestObject,
   CommitObject,
-  startCommitRequestFromObject,
-  FinishCommitRequestObject,
-  finishCommitRequestFromObject,
-  InspectCommitRequestObject,
-  inspectCommitRequestFromObject,
   commitFromObject,
-  SubscribeCommitRequestObject,
-  subscribeCommitRequestFromObject,
+  triggerFromObject,
 } from '../builders/pfs';
-import {ServiceArgs} from '../lib/types';
+import {
+  ServiceArgs,
+  CreateBranchArgs,
+  CreateRepoRequestArgs,
+  DeleteBranchRequestArgs,
+  DeleteRepoRequestArgs,
+  FinishCommitRequestArgs,
+  InspectCommitRequestArgs,
+  InspectCommitSetArgs,
+  ListBranchRequestArgs,
+  ListCommitArgs,
+  StartCommitRequestArgs,
+  SubscribeCommitRequestArgs,
+} from '../lib/types';
 import streamToObjectArray from '../utils/streamToObjectArray';
 
 import {GRPC_MAX_MESSAGE_LENGTH} from './constants/pfs';
@@ -169,9 +173,19 @@ const pfs = ({
 
       return streamToObjectArray<CommitInfo, CommitInfo.AsObject>(stream);
     },
-    startCommit: (request: StartCommitRequestObject) => {
+    startCommit: ({
+      branch,
+      parent,
+      description = '',
+    }: StartCommitRequestArgs) => {
       return new Promise<Commit.AsObject>((resolve, reject) => {
-        const startCommitRequest = startCommitRequestFromObject(request);
+        const startCommitRequest = new StartCommitRequest();
+
+        startCommitRequest.setBranch(branchFromObject(branch));
+        if (parent) {
+          startCommitRequest.setParent(commitFromObject(parent));
+        }
+        startCommitRequest.setDescription(description);
 
         client.startCommit(
           startCommitRequest,
@@ -185,9 +199,23 @@ const pfs = ({
         );
       });
     },
-    finishCommit: (request: FinishCommitRequestObject) => {
+    finishCommit: ({
+      error,
+      force = false,
+      commit,
+      description = '',
+    }: FinishCommitRequestArgs) => {
       return new Promise<Empty.AsObject>((resolve, reject) => {
-        const finishCommitRequest = finishCommitRequestFromObject(request);
+        const finishCommitRequest = new FinishCommitRequest();
+
+        if (error) {
+          finishCommitRequest.setError(error);
+        }
+        if (commit) {
+          finishCommitRequest.setCommit(commitFromObject(commit));
+        }
+        finishCommitRequest.setForce(force);
+        finishCommitRequest.setDescription(description);
 
         client.finishCommit(
           finishCommitRequest,
@@ -215,10 +243,17 @@ const pfs = ({
         });
       });
     },
-    inspectCommit: (request: InspectCommitRequestObject) => {
+    inspectCommit: ({wait, commit}: InspectCommitRequestArgs) => {
       return new Promise<CommitInfo.AsObject>((resolve, reject) => {
-        const inspectCommitRequest = inspectCommitRequestFromObject(request);
+        const inspectCommitRequest = new InspectCommitRequest();
 
+        if (wait) {
+          inspectCommitRequest.setWait(wait);
+        }
+
+        if (commit) {
+          inspectCommitRequest.setCommit(commitFromObject(commit));
+        }
         client.inspectCommit(
           inspectCommitRequest,
           credentialMetadata,
@@ -231,8 +266,35 @@ const pfs = ({
         );
       });
     },
-    subscribeCommit: (request: SubscribeCommitRequestObject) => {
-      const subscribeCommitRequest = subscribeCommitRequestFromObject(request);
+    subscribeCommit: ({
+      repo,
+      branch,
+      state,
+      all = true,
+      originKind,
+      from,
+    }: SubscribeCommitRequestArgs) => {
+      const subscribeCommitRequest = new SubscribeCommitRequest();
+
+      subscribeCommitRequest.setRepo(repoFromObject(repo).setType('user'));
+
+      if (from) {
+        subscribeCommitRequest.setFrom(commitFromObject(from));
+      }
+
+      if (branch) {
+        subscribeCommitRequest.setBranch(branch);
+      }
+
+      if (state) {
+        subscribeCommitRequest.setState(state);
+      }
+
+      if (originKind) {
+        subscribeCommitRequest.setOriginKind(originKind);
+      }
+
+      subscribeCommitRequest.setAll(all);
       const stream = client.subscribeCommit(
         subscribeCommitRequest,
         credentialMetadata,
@@ -240,9 +302,12 @@ const pfs = ({
 
       return streamToObjectArray<CommitInfo, CommitInfo.AsObject>(stream);
     },
-    inspectCommitSet: (request: InspectCommitSetRequestObject) => {
-      const inspectCommitSetRequest =
-        inspectCommitSetRequestFromObject(request);
+    inspectCommitSet: ({commitSet, wait = true}: InspectCommitSetArgs) => {
+      const inspectCommitSetRequest = new InspectCommitSetRequest();
+
+      inspectCommitSetRequest.setCommitSet(commitSetFromObject(commitSet));
+      inspectCommitSetRequest.setWait(wait);
+
       const stream = client.inspectCommitSet(
         inspectCommitSetRequest,
         credentialMetadata,
@@ -278,9 +343,36 @@ const pfs = ({
         );
       });
     },
-    createBranch: (request: CreateBranchRequestObject) => {
+    createBranch: ({
+      head,
+      branch,
+      provenance,
+      trigger,
+      newCommitSet,
+    }: CreateBranchArgs) => {
       return new Promise<Empty.AsObject>((resolve, reject) => {
-        const createBranchRequest = createBranchRequestFromObject(request);
+        const createBranchRequest = new CreateBranchRequest();
+
+        if (head) {
+          createBranchRequest.setHead(commitFromObject(head));
+        }
+        if (branch) {
+          createBranchRequest.setBranch(branchFromObject(branch));
+        }
+
+        if (provenance) {
+          const provenanceArray: Branch[] = provenance.map(
+            (eachProvenanceObject) => {
+              return branchFromObject(eachProvenanceObject);
+            },
+          );
+          createBranchRequest.setProvenanceList(provenanceArray);
+        }
+
+        if (trigger) {
+          createBranchRequest.setTrigger(triggerFromObject(trigger));
+        }
+        createBranchRequest.setNewCommitSet(newCommitSet);
 
         client.createBranch(
           createBranchRequest,
@@ -314,15 +406,31 @@ const pfs = ({
         );
       });
     },
-    listBranch: (request: ListBranchRequestObject) => {
-      const listBranchRequest = listBranchRequestFromObject(request);
+    listBranch: ({repo, reverse = false}: ListBranchRequestArgs) => {
+      const listBranchRequest = new ListBranchRequest();
+
+      listBranchRequest.setRepo(
+        new Repo().setName(repo?.name || '').setType('user'),
+      );
+      listBranchRequest.setReverse(reverse);
       const stream = client.listBranch(listBranchRequest, credentialMetadata);
 
       return streamToObjectArray<BranchInfo, BranchInfo.AsObject>(stream);
     },
-    deleteBranch: (request: DeleteBranchRequestObject) => {
+    deleteBranch: ({branch, force = false}: DeleteBranchRequestArgs) => {
       return new Promise<Empty.AsObject>((resolve, reject) => {
-        const deleteBranchRequest = deleteBranchRequestFromObject(request);
+        const deleteBranchRequest = new DeleteBranchRequest();
+
+        if (branch) {
+          deleteBranchRequest.setBranch(
+            new Branch()
+              .setName(branch.name)
+              .setRepo(
+                new Repo().setName(branch.repo?.name || '').setType('user'),
+              ),
+          );
+        }
+        deleteBranchRequest.setForce(force);
 
         client.deleteBranch(
           deleteBranchRequest,
@@ -362,9 +470,18 @@ const pfs = ({
         );
       });
     },
-    createRepo: (request: CreateRepoRequestObject) => {
+    createRepo: ({
+      repo,
+      description = '',
+      update = false,
+    }: CreateRepoRequestArgs) => {
       return new Promise<Empty.AsObject>((resolve, reject) => {
-        const createRepoRequest = createRepoRequestFromObject(request);
+        const createRepoRequest = new CreateRepoRequest();
+
+        createRepoRequest.setRepo(repoFromObject(repo));
+        createRepoRequest.setDescription(description);
+        createRepoRequest.setUpdate(update);
+
         client.createRepo(createRepoRequest, credentialMetadata, (error) => {
           if (error) {
             return reject(error);
@@ -373,9 +490,12 @@ const pfs = ({
         });
       });
     },
-    deleteRepo: (request: DeleteRepoRequestObject) => {
+    deleteRepo: ({repo, force = false}: DeleteRepoRequestArgs) => {
       return new Promise<Empty.AsObject>((resolve, reject) => {
-        const deleteRepoRequest = deleteRepoRequestFromObject(request);
+        const deleteRepoRequest = new DeleteRepoRequest();
+
+        deleteRepoRequest.setRepo(repoFromObject(repo));
+        deleteRepoRequest.setForce(force);
         client.deleteRepo(deleteRepoRequest, credentialMetadata, (error) => {
           if (error) {
             return reject(error);
