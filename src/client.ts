@@ -129,16 +129,12 @@ const client = ({
       return projectsService;
     },
     modifyFile: () => {
-      if (modifyFile) return modifyFile;
-
-      modifyFile = new ModifyFile({
+      return new ModifyFile({
         pachdAddress,
         channelCredentials,
         credentialMetadata,
         plugins,
       });
-
-      return modifyFile;
     },
     attachCredentials: ({
       authToken = '',
