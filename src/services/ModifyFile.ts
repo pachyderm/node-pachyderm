@@ -14,6 +14,9 @@ interface ModifyFileConstructorArgs extends ServiceArgs {
   plugins: GRPCPlugin[];
 }
 
+// We need to account for some overhead in the stream data
+const STREAM_OVERHEAD_LENGTH = 29;
+
 export class ModifyFile {
   private client: APIClient;
   private promise: Promise<Empty.AsObject>;
@@ -68,8 +71,7 @@ export class ModifyFile {
   }
 
   putFileFromBytes(path: string, bytes: Buffer, callback?: () => void) {
-    // We apparently need to account for some overhead in the stream data, using just the full max message length causes an error
-    const messageLength = GRPC_MAX_MESSAGE_LENGTH - 29;
+    const messageLength = GRPC_MAX_MESSAGE_LENGTH - STREAM_OVERHEAD_LENGTH;
     let end = messageLength;
     let chunk = bytes.slice(0, end);
     const write = () => {
