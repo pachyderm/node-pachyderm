@@ -29,6 +29,7 @@ export class ModifyFile {
       /* eslint-disable @typescript-eslint/naming-convention */
       'grpc.max_receive_message_length': GRPC_MAX_MESSAGE_LENGTH,
       'grpc.max_send_message_length': GRPC_MAX_MESSAGE_LENGTH,
+      'grpc-node.max_session_memory': 100,
       /* eslint-enable @typescript-eslint/naming-convention */
     });
 
@@ -66,16 +67,26 @@ export class ModifyFile {
     return this;
   }
 
-  putFileFromBytes(path: string, bytes: Buffer) {
-    let end = GRPC_MAX_MESSAGE_LENGTH;
+  putFileFromBytes(path: string, bytes: Buffer, callback?: () => void) {
+    // We apparently need to account for some overhead in the stream data, using just the full max message length causes an error
+    const messageLength = GRPC_MAX_MESSAGE_LENGTH - 29;
+    let end = messageLength;
     let chunk = bytes.slice(0, end);
-    while (chunk.length > 0) {
-      const addFile = new AddFile()
-        .setPath(path)
-        .setRaw(new BytesValue().setValue(chunk));
-      this.stream.write(new ModifyFileRequest().setAddFile(addFile));
-      chunk = bytes.slice(end, end + GRPC_MAX_MESSAGE_LENGTH);
-      end += GRPC_MAX_MESSAGE_LENGTH;
+    const write = () => {
+      let ok = true;
+      while (chunk.length > 0 && ok) {
+        const addFile = new AddFile()
+          .setPath(path)
+          .setRaw(new BytesValue().setValue(chunk));
+        ok = this.stream.write(new ModifyFileRequest().setAddFile(addFile));
+        chunk = bytes.slice(end, end + messageLength);
+        end += messageLength;
+        if (chunk.length <= 0 && callback) callback();
+      }
+    };
+    write();
+    if (chunk.length > 0) {
+      this.stream.once('drain', write);
     }
     return this;
   }

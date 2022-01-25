@@ -73,6 +73,7 @@ const pfs = ({
     /* eslint-disable @typescript-eslint/naming-convention */
     'grpc.max_receive_message_length': GRPC_MAX_MESSAGE_LENGTH,
     'grpc.max_send_message_length': GRPC_MAX_MESSAGE_LENGTH,
+    'grpc-node.max_session_memory': 100,
     /* eslint-enable @typescript-eslint/naming-convention */
   });
 
