@@ -238,7 +238,7 @@ const pps = ({
           deletePipelineRequest,
           credentialMetadata,
           (error, res) => {
-            if(error) {
+            if (error) {
               reject(error);
             }
             return resolve(res.toObject());

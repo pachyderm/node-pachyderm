@@ -156,7 +156,6 @@ describe('services/pps', () => {
 
       const updatedPipelines = await pachClient.pps().listPipeline();
       expect(updatedPipelines).toHaveLength(0);
-
-    })
-  })
+    });
+  });
 });
