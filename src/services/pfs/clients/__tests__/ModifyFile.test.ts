@@ -1,6 +1,6 @@
 import path from 'path';
 
-import client from '../../client';
+import client from '../../../../client';
 
 describe('ModifyFile', () => {
   afterAll(async () => {
@@ -31,8 +31,8 @@ describe('ModifyFile', () => {
       });
       expect(initialFiles).toHaveLength(0);
 
-      await client
-        .modifyFile()
+      const fileClient = await client.pfs().modifyFile();
+      await fileClient
         .setCommit(commit)
         .putFileFromURL('at-at.png', 'http://imgur.com/8MN9Kg0.png')
         .end();
@@ -61,8 +61,8 @@ describe('ModifyFile', () => {
       });
       expect(initialFiles).toHaveLength(0);
 
-      await client
-        .modifyFile()
+      const fileClient = await client.pfs().modifyFile();
+      await fileClient
         .setCommit(commit)
         .putFileFromBytes('test.dat', Buffer.from('data'))
         .end();
@@ -89,11 +89,15 @@ describe('ModifyFile', () => {
       });
       expect(initialFiles).toHaveLength(0);
 
-      await client
-        .modifyFile()
+      const fileClient = await client.pfs().modifyFile();
+
+      await fileClient
         .setCommit(commit)
         .putFileFromFilepath(
-          path.join(__dirname, '../../../examples/opencv/images/8MN9Kg0.jpg'),
+          path.join(
+            __dirname,
+            '../../../../../examples/opencv/images/8MN9Kg0.jpg',
+          ),
           '/8MN9Kg0.jpg',
         )
         .end();
