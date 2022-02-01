@@ -1,8 +1,12 @@
 import {Empty} from 'google-protobuf/google/protobuf/empty_pb';
 
 import {Commit, ModifyFileRequest} from '../../..';
-import {branchFromObject, commitFromObject} from '../../../builders/pfs';
-import {AddFile, Branch, Repo} from '../../../proto/pfs/pfs_pb';
+import {
+  branchFromObject,
+  BranchObject,
+  commitFromObject,
+} from '../../../builders/pfs';
+import {deriveObserversFromPlugins} from '../lib/deriverObserversFromPlugins';
 import {FileClient, FileClientConstructorArgs} from '../lib/FileClient';
 export class ModifyFile extends FileClient<Empty.AsObject> {
   constructor({
@@ -17,15 +21,9 @@ export class ModifyFile extends FileClient<Empty.AsObject> {
       credentialMetadata,
       plugins,
     });
-    const onCallObservers = plugins.flatMap((p) =>
-      p.onCall ? [p.onCall] : [],
-    );
-    const onCompleteObservers = plugins.flatMap((p) =>
-      p.onCompleted ? [p.onCompleted] : [],
-    );
-    const onErrorObservers = plugins.flatMap((p) =>
-      p.onError ? [p.onError] : [],
-    );
+    const {onCallObservers, onCompleteObservers, onErrorObservers} =
+      deriveObserversFromPlugins(plugins);
+
     this.promise = new Promise<Empty.AsObject>((resolve, reject) => {
       onCallObservers.forEach((cb) => cb({requestName: 'modifyFile'}));
       this.stream = this.client.modifyFile(credentialMetadata, (err) => {
@@ -44,7 +42,7 @@ export class ModifyFile extends FileClient<Empty.AsObject> {
     });
   }
 
-  autoCommit(branch: Branch.AsObject) {
+  autoCommit(branch: BranchObject) {
     this.stream.write(
       new ModifyFileRequest().setSetCommit(
         new Commit().setBranch(branchFromObject(branch)),

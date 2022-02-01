@@ -25,6 +25,7 @@ describe('FileSet', () => {
       const fileClient = await client.pfs().fileSet();
       const fileSetId = await fileClient
         .putFileFromURL('at-at.png', 'http://imgur.com/8MN9Kg0.png')
+        .putFileFromURL('liberty.png', 'http://imgur.com/46Q8nDz.png')
         .end();
 
       const commit = await client.pfs().startCommit({
@@ -39,7 +40,7 @@ describe('FileSet', () => {
         branch: {name: 'master', repo: {name: 'putFileFromURL'}},
       });
 
-      expect(files).toHaveLength(1);
+      expect(files).toHaveLength(2);
     });
   });
 
@@ -48,12 +49,14 @@ describe('FileSet', () => {
       const client = await createSandbox('putFileFromBytes');
 
       const fileClient = await client.pfs().fileSet();
-      await fileClient.putFileFromBytes('test.dat', Buffer.from('data'));
+      const fileSetId = await fileClient
+        .putFileFromBytes('test.dat', Buffer.from('data'))
+        .putFileFromBytes('test2.dat', Buffer.from('data'))
+        .end();
 
       const commit = await client.pfs().startCommit({
         branch: {name: 'master', repo: {name: 'putFileFromBytes'}},
       });
-      const fileSetId = await fileClient.end();
       await client.pfs().addFileSet({fileSetId, commit});
 
       await client.pfs().finishCommit({commit});
@@ -62,7 +65,7 @@ describe('FileSet', () => {
         commitId: commit.id,
         branch: {name: 'master', repo: {name: 'putFileFromBytes'}},
       });
-      expect(files).toHaveLength(1);
+      expect(files).toHaveLength(2);
     });
   });
 
@@ -80,6 +83,13 @@ describe('FileSet', () => {
           ),
           '/8MN9Kg0.jpg',
         )
+        .putFileFromFilepath(
+          path.join(
+            __dirname,
+            '../../../../../examples/opencv/images/46Q8nDz.jpg',
+          ),
+          '/46Q8nDz.jpg',
+        )
         .end();
 
       const commit = await client.pfs().startCommit({
@@ -93,7 +103,7 @@ describe('FileSet', () => {
         commitId: commit.id,
         branch: {name: 'master', repo: {name: 'putFileFromFilePath'}},
       });
-      expect(files).toHaveLength(1);
+      expect(files).toHaveLength(2);
     });
   });
 });

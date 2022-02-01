@@ -567,28 +567,20 @@ const pfs = ({
         });
       });
     },
-    modifyFile: () => {
-      return new Promise<ModifyFile>((resolve) => {
-        resolve(
-          new ModifyFile({
-            pachdAddress,
-            channelCredentials,
-            credentialMetadata,
-            plugins,
-          }),
-        );
+    modifyFile: async () => {
+      return new ModifyFile({
+        pachdAddress,
+        channelCredentials,
+        credentialMetadata,
+        plugins,
       });
     },
-    fileSet: () => {
-      return new Promise<FileSet>((resolve) => {
-        resolve(
-          new FileSet({
-            pachdAddress,
-            channelCredentials,
-            credentialMetadata,
-            plugins,
-          }),
-        );
+    fileSet: async () => {
+      return new FileSet({
+        pachdAddress,
+        channelCredentials,
+        credentialMetadata,
+        plugins,
       });
     },
   };
