@@ -119,8 +119,9 @@ describe('ModifyFile', () => {
         branch: {name: 'master', repo: {name: 'deleteFile'}},
       });
 
-      await client
-        .modifyFile()
+      const fileClient = await client.pfs().modifyFile();
+
+      await fileClient
         .setCommit(commit)
         .putFileFromBytes('test.dat', Buffer.from('data'))
         .end();
@@ -137,11 +138,9 @@ describe('ModifyFile', () => {
         branch: {name: 'master', repo: {name: 'deleteFile'}},
       });
 
-      await client
-        .modifyFile()
-        .setCommit(deleteCommit)
-        .deleteFile('test.dat')
-        .end();
+      const fileClient2 = await client.pfs().modifyFile();
+
+      await fileClient2.setCommit(deleteCommit).deleteFile('test.dat').end();
 
       await client.pfs().finishCommit({commit: deleteCommit});
 
