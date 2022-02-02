@@ -13,8 +13,8 @@ export interface FileClientConstructorArgs extends ServiceArgs {
   plugins: GRPCPlugin[];
 }
 
-// We need to account for some overhead in the stream data
-const STREAM_OVERHEAD_LENGTH = 17;
+// We need to account for some overhead in the stream data for putFileFromBytes
+export const STREAM_OVERHEAD_LENGTH = 17;
 
 export class FileClient<T> {
   protected client: APIClient;
