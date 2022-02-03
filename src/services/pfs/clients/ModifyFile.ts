@@ -9,7 +9,7 @@ import {
 import {deriveObserversFromPlugins} from '../lib/deriverObserversFromPlugins';
 import {FileClient, FileClientConstructorArgs} from '../lib/FileClient';
 export class ModifyFile extends FileClient<Empty.AsObject> {
-  commit: Commit.AsObject;
+  commit: Commit.AsObject | undefined;
   constructor({
     pachdAddress,
     channelCredentials,
