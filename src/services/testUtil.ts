@@ -5,7 +5,7 @@ export const waitForJobSuccess = async (
   jobId: string,
   pipelineName: string,
   interval = 500,
-  timeout = 10000,
+  timeout = 20000,
 ) => {
   return new Promise((resolve, reject) => {
     const pachClient = client({ssl: false, pachdAddress: 'localhost:30650'});
