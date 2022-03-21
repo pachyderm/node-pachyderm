@@ -2,11 +2,13 @@ import crypto from 'crypto';
 
 import client from '../../client';
 import {
+  DatumState,
   Input,
   PFSInput,
   PipelineState,
   Transform,
 } from '../../proto/pps/pps_pb';
+import {waitForJobSuccess} from '../testUtil';
 
 describe('services/pps', () => {
   afterAll(async () => {
@@ -26,7 +28,7 @@ describe('services/pps', () => {
     const transform = new Transform()
       .setCmdList(['sh'])
       .setImage('alpine')
-      .setStdinList([`cp /pfs/${inputRepoName}/*.dat /pfs/out/`]);
+      .setStdinList([`cp /pfs/${inputRepoName}/* /pfs/out/`]);
     const input = new Input();
     const pfsInput = new PFSInput().setGlob('/*').setRepo(inputRepoName);
     input.setPfs(pfsInput);
@@ -156,6 +158,51 @@ describe('services/pps', () => {
 
       const updatedPipelines = await pachClient.pps().listPipeline();
       expect(updatedPipelines).toHaveLength(0);
+    });
+  });
+
+  describe('listDatums + inspectDatum', () => {
+    it('should list datums for a pipeline job', async () => {
+      const {pachClient, inputRepoName} = await createSandBox('listDatums');
+      const commit = await pachClient.pfs().startCommit({
+        branch: {name: 'master', repo: {name: inputRepoName}},
+      });
+
+      await pachClient
+        .modifyFile()
+        .setCommit(commit)
+        .putFileFromBytes('dummyData.csv', Buffer.from('a,b,c'))
+        .end();
+
+      await pachClient.pfs().finishCommit({commit});
+      const jobs = await pachClient.pps().listJobs();
+
+      const jobId = jobs[0]?.job?.id;
+      expect(jobId).toBeDefined();
+
+      await waitForJobSuccess(jobId || '', 'listDatums');
+
+      const datums = await pachClient.pps().listDatums({
+        jobId: jobId || '',
+        pipelineName: 'listDatums',
+      });
+
+      expect(datums).toHaveLength(1);
+      expect(datums[0].state).toEqual(DatumState.SUCCESS);
+      expect(datums[0].dataList[0]?.file?.path).toEqual("/dummyData.csv");
+      expect(datums[0].dataList[0]?.sizeBytes).toEqual(5);
+
+      const datum = await pachClient.pps().inspectDatum({
+        id: datums[0]?.datum?.id || '',
+        jobId: jobId || '',
+        pipelineName: 'listDatums',
+      });
+
+      const datumObject = datum.toObject();
+
+      expect(datumObject.state).toEqual(DatumState.SUCCESS);
+      expect(datumObject.dataList[0]?.file?.path).toEqual("/dummyData.csv");
+      expect(datumObject.dataList[0]?.sizeBytes).toEqual(5);
     });
   });
 });

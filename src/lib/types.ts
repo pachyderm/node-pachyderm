@@ -126,3 +126,14 @@ export type DeleteBranchRequestArgs = {
   branch: BranchObject;
   force?: DeleteBranchRequest.AsObject['force'];
 };
+
+export type InspectDatumRequestArgs = {
+  id: string;
+  jobId: string;
+  pipelineName: string;
+}
+
+export type ListDatumsRequestArgs = {
+  jobId: string;
+  pipelineName: string;
+}
