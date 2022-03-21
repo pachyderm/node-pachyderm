@@ -48,6 +48,7 @@ export type JobQueryArgs = {
   id: string;
   projectId: string;
   pipelineName: string;
+  wait?: boolean;
 };
 
 export type GetLogsRequestArgs = {

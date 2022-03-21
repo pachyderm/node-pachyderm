@@ -8,7 +8,6 @@ import {
   PipelineState,
   Transform,
 } from '../../proto/pps/pps_pb';
-import {waitForJobSuccess} from '../testUtil';
 
 describe('services/pps', () => {
   afterAll(async () => {
@@ -185,7 +184,12 @@ describe('services/pps', () => {
       const jobId = jobs[0]?.job?.id;
       expect(jobId).toBeDefined();
 
-      await waitForJobSuccess(jobId || '', 'listDatums');
+      await pachClient.pps().inspectJob({
+        id: jobId || '',
+        pipelineName: 'listDatums',
+        wait: true,
+        projectId: 'default',
+      });
 
       const datums = await pachClient.pps().listDatums({
         jobId: jobId || '',

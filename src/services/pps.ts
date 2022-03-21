@@ -318,10 +318,11 @@ const pps = ({
       );
     },
 
-    inspectJob: ({id, pipelineName}: JobQueryArgs) => {
+    inspectJob: ({id, pipelineName, wait = false}: JobQueryArgs) => {
       return new Promise<JobInfo.AsObject>((resolve, reject) => {
         client.inspectJob(
           new InspectJobRequest()
+            .setWait(wait)
             .setJob(
               jobFromObject({id}).setPipeline(
                 pipelineFromObject({name: pipelineName}),
@@ -408,6 +409,7 @@ const pps = ({
                   .setPipeline(new Pipeline().setName(pipelineName)),
               ),
           ),
+          credentialMetadata,
           (error, res) => {
             if (error) {
               return reject(error);
@@ -425,6 +427,7 @@ const pps = ({
             .setId(jobId)
             .setPipeline(new Pipeline().setName(pipelineName)),
         ),
+        credentialMetadata,
       );
 
       return streamToObjectArray<DatumInfo, DatumInfo.AsObject>(stream);
