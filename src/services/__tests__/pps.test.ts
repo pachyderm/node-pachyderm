@@ -165,6 +165,8 @@ describe('services/pps', () => {
 
   describe('listDatums + inspectDatum', () => {
     it('should list datums for a pipeline job', async () => {
+      jest.setTimeout(60000);
+      
       const {pachClient, inputRepoName} = await createSandBox('listDatums');
       const commit = await pachClient.pfs().startCommit({
         branch: {name: 'master', repo: {name: inputRepoName}},
