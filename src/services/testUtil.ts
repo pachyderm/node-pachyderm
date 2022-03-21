@@ -27,7 +27,7 @@ export const waitForJobSuccess = async (
           return;
         }
         if (Date.now() - start > timeout) {
-          reject('Timed out waiting for job to succeed');
+          reject(`Timed out waiting for job to succeed, current job state: ${JobState[job.state].toString()}`);
           return;
         }
         poll();
