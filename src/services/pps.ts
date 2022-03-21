@@ -427,9 +427,7 @@ const pps = ({
         ),
       );
 
-      return streamToObjectArray<DatumInfo, DatumInfo.AsObject>(
-        stream
-      )
+      return streamToObjectArray<DatumInfo, DatumInfo.AsObject>(stream);
     },
   };
 };

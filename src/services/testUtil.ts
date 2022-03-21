@@ -4,10 +4,10 @@ import {JobState} from '../proto/pps/pps_pb';
 export const waitForJobSuccess = async (
   jobId: string,
   pipelineName: string,
-  interval: number = 500,
-  timeout: number = 10000,
+  interval = 500,
+  timeout = 10000,
 ) => {
-  return new Promise(async (resolve, reject) => {
+  return new Promise((resolve, reject) => {
     const pachClient = client({ssl: false, pachdAddress: 'localhost:30650'});
     const pps = pachClient.pps();
     const start = Date.now();

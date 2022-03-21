@@ -189,7 +189,7 @@ describe('services/pps', () => {
 
       expect(datums).toHaveLength(1);
       expect(datums[0].state).toEqual(DatumState.SUCCESS);
-      expect(datums[0].dataList[0]?.file?.path).toEqual("/dummyData.csv");
+      expect(datums[0].dataList[0]?.file?.path).toEqual('/dummyData.csv');
       expect(datums[0].dataList[0]?.sizeBytes).toEqual(5);
 
       const datum = await pachClient.pps().inspectDatum({
@@ -201,7 +201,7 @@ describe('services/pps', () => {
       const datumObject = datum.toObject();
 
       expect(datumObject.state).toEqual(DatumState.SUCCESS);
-      expect(datumObject.dataList[0]?.file?.path).toEqual("/dummyData.csv");
+      expect(datumObject.dataList[0]?.file?.path).toEqual('/dummyData.csv');
       expect(datumObject.dataList[0]?.sizeBytes).toEqual(5);
     });
   });
