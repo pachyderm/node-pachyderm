@@ -14,7 +14,9 @@ describe('services/pps', () => {
   afterAll(async () => {
     const pachClient = client({ssl: false, pachdAddress: 'localhost:30650'});
     const pps = pachClient.pps();
+    const pfs = pachClient.pfs();
     await pps.deleteAll();
+    await pfs.deleteAll();
   });
 
   const createSandBox = async (name: string) => {
@@ -168,8 +170,9 @@ describe('services/pps', () => {
         branch: {name: 'master', repo: {name: inputRepoName}},
       });
 
-      await pachClient
-        .modifyFile()
+      const fileClient = await pachClient.pfs().modifyFile();
+
+      await fileClient
         .setCommit(commit)
         .putFileFromBytes('dummyData.csv', Buffer.from('a,b,c'))
         .end();

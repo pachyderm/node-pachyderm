@@ -35,6 +35,7 @@ export interface ServiceArgs {
   pachdAddress: string;
   channelCredentials: ChannelCredentials;
   credentialMetadata: Metadata;
+  plugins?: GRPCPlugin[];
 }
 
 export type JobSetQueryArgs = {
@@ -136,4 +137,14 @@ export type InspectDatumRequestArgs = {
 export type ListDatumsRequestArgs = {
   jobId: string;
   pipelineName: string;
+};
+
+export type RenewFileSetRequestArgs = {
+  fileSetId: string;
+  duration?: number;
+};
+
+export type AddFileSetRequestArgs = {
+  fileSetId: string;
+  commit: CommitObject;
 };

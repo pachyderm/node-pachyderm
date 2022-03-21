@@ -13,7 +13,7 @@ import {
   CommitObject,
   commitFromObject,
   triggerFromObject,
-} from '../builders/pfs';
+} from '../../builders/pfs';
 import {
   ServiceArgs,
   CreateBranchArgs,
@@ -27,13 +27,16 @@ import {
   ListCommitArgs,
   StartCommitRequestArgs,
   SubscribeCommitRequestArgs,
-} from '../lib/types';
-import {APIClient} from '../proto/pfs/pfs_grpc_pb';
+  RenewFileSetRequestArgs,
+  AddFileSetRequestArgs,
+} from '../../lib/types';
+import {APIClient} from '../../proto/pfs/pfs_grpc_pb';
 import {
   BranchInfo,
   CommitInfo,
   CommitSetInfo,
   FileInfo,
+  DiffFileResponse,
   GetFileRequest,
   InspectFileRequest,
   InspectRepoRequest,
@@ -48,6 +51,7 @@ import {
   ListCommitRequest,
   Branch,
   CreateBranchRequest,
+  DropCommitSetRequest,
   InspectCommitSetRequest,
   StartCommitRequest,
   FinishCommitRequest,
@@ -58,16 +62,24 @@ import {
   ListBranchRequest,
   DeleteBranchRequest,
   DeleteRepoRequest,
-} from '../proto/pfs/pfs_pb';
-import streamToObjectArray from '../utils/streamToObjectArray';
+  AddFileSetRequest,
+  RenewFileSetRequest,
+  DiffFileRequest,
+  CommitSet,
+  ComposeFileSetRequest,
+} from '../../proto/pfs/pfs_pb';
+import streamToObjectArray from '../../utils/streamToObjectArray';
+import {RPC_DEADLINE_MS} from '../constants/rpc';
 
-import {GRPC_MAX_MESSAGE_LENGTH} from './constants/pfs';
-import {RPC_DEADLINE_MS} from './constants/rpc';
+import {FileSet} from './clients/FileSet';
+import {ModifyFile} from './clients/ModifyFile';
+import {GRPC_MAX_MESSAGE_LENGTH} from './lib/constants';
 
 const pfs = ({
   pachdAddress,
   channelCredentials,
   credentialMetadata,
+  plugins = [],
 }: ServiceArgs) => {
   const client = new APIClient(pachdAddress, channelCredentials, {
     /* eslint-disable @typescript-eslint/naming-convention */
@@ -82,13 +94,36 @@ const pfs = ({
       const file = fileFromObject(params);
 
       listFileRequest.setFile(file);
-      listFileRequest.setDetails(true);
 
       const stream = client.listFile(listFileRequest, credentialMetadata, {
         deadline: Date.now() + RPC_DEADLINE_MS,
       });
 
       return streamToObjectArray<FileInfo, FileInfo.AsObject>(stream);
+    },
+    diffFile: (
+      newFileObject: FileObject,
+      oldFileObject?: FileObject,
+      shallow = false,
+    ) => {
+      const diffFileRequest = new DiffFileRequest();
+
+      const newFile = fileFromObject(newFileObject);
+      diffFileRequest.setNewFile(newFile);
+      diffFileRequest.setShallow(shallow);
+
+      if (oldFileObject) {
+        const oldFile = fileFromObject(oldFileObject);
+        diffFileRequest.setOldFile(oldFile);
+      }
+
+      const stream = client.diffFile(diffFileRequest, credentialMetadata, {
+        deadline: Date.now() + RPC_DEADLINE_MS,
+      });
+
+      return streamToObjectArray<DiffFileResponse, DiffFileResponse.AsObject>(
+        stream,
+      );
     },
     getFile: (params: FileObject, tar = false) => {
       const getFileRequest = new GetFileRequest();
@@ -361,6 +396,16 @@ const pfs = ({
         );
       });
     },
+    dropCommitSet: (commitSet: CommitSetObject) => {
+      return new Promise<Empty.AsObject>((resolve, reject) => {
+        const request = new DropCommitSetRequest();
+        request.setCommitSet(commitSetFromObject(commitSet));
+        client.dropCommitSet(request, credentialMetadata, (error) => {
+          if (error) return reject(error);
+          return resolve({});
+        });
+      });
+    },
     createBranch: ({
       head,
       branch,
@@ -534,6 +579,56 @@ const pfs = ({
           }
           return resolve({});
         });
+      });
+    },
+    addFileSet: ({fileSetId, commit}: AddFileSetRequestArgs) => {
+      return new Promise<Empty.AsObject>((resolve, reject) => {
+        const request = new AddFileSetRequest()
+          .setCommit(commitFromObject(commit))
+          .setFileSetId(fileSetId);
+
+        client.addFileSet(request, credentialMetadata, (err) => {
+          if (err) reject(err);
+          else resolve({});
+        });
+      });
+    },
+    renewFileSet: ({fileSetId, duration = 600}: RenewFileSetRequestArgs) => {
+      return new Promise<Empty.AsObject>((resolve, reject) => {
+        const request = new RenewFileSetRequest()
+          .setFileSetId(fileSetId)
+          .setTtlSeconds(duration);
+
+        client.renewFileSet(request, credentialMetadata, (err) => {
+          if (err) reject(err);
+          else resolve({});
+        });
+      });
+    },
+    composeFileSet: (fileSets: string[]) => {
+      return new Promise<string>((resolve, reject) => {
+        const request = new ComposeFileSetRequest().setFileSetIdsList(fileSets);
+
+        client.composeFileSet(request, credentialMetadata, (err, res) => {
+          if (err) reject(err);
+          else resolve(res.getFileSetId());
+        });
+      });
+    },
+    modifyFile: async () => {
+      return new ModifyFile({
+        pachdAddress,
+        channelCredentials,
+        credentialMetadata,
+        plugins,
+      });
+    },
+    fileSet: async () => {
+      return new FileSet({
+        pachdAddress,
+        channelCredentials,
+        credentialMetadata,
+        plugins,
       });
     },
   };
