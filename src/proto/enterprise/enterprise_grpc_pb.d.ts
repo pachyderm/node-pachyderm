@@ -14,9 +14,6 @@ interface IAPIService extends grpc.ServiceDefinition<grpc.UntypedServiceImplemen
     getActivationCode: IAPIService_IGetActivationCode;
     heartbeat: IAPIService_IHeartbeat;
     deactivate: IAPIService_IDeactivate;
-    pause: IAPIService_IPause;
-    unpause: IAPIService_IUnpause;
-    pauseStatus: IAPIService_IPauseStatus;
 }
 
 interface IAPIService_IActivate extends grpc.MethodDefinition<enterprise_enterprise_pb.ActivateRequest, enterprise_enterprise_pb.ActivateResponse> {
@@ -64,33 +61,6 @@ interface IAPIService_IDeactivate extends grpc.MethodDefinition<enterprise_enter
     responseSerialize: grpc.serialize<enterprise_enterprise_pb.DeactivateResponse>;
     responseDeserialize: grpc.deserialize<enterprise_enterprise_pb.DeactivateResponse>;
 }
-interface IAPIService_IPause extends grpc.MethodDefinition<enterprise_enterprise_pb.PauseRequest, enterprise_enterprise_pb.PauseResponse> {
-    path: "/enterprise_v2.API/Pause";
-    requestStream: false;
-    responseStream: false;
-    requestSerialize: grpc.serialize<enterprise_enterprise_pb.PauseRequest>;
-    requestDeserialize: grpc.deserialize<enterprise_enterprise_pb.PauseRequest>;
-    responseSerialize: grpc.serialize<enterprise_enterprise_pb.PauseResponse>;
-    responseDeserialize: grpc.deserialize<enterprise_enterprise_pb.PauseResponse>;
-}
-interface IAPIService_IUnpause extends grpc.MethodDefinition<enterprise_enterprise_pb.UnpauseRequest, enterprise_enterprise_pb.UnpauseResponse> {
-    path: "/enterprise_v2.API/Unpause";
-    requestStream: false;
-    responseStream: false;
-    requestSerialize: grpc.serialize<enterprise_enterprise_pb.UnpauseRequest>;
-    requestDeserialize: grpc.deserialize<enterprise_enterprise_pb.UnpauseRequest>;
-    responseSerialize: grpc.serialize<enterprise_enterprise_pb.UnpauseResponse>;
-    responseDeserialize: grpc.deserialize<enterprise_enterprise_pb.UnpauseResponse>;
-}
-interface IAPIService_IPauseStatus extends grpc.MethodDefinition<enterprise_enterprise_pb.PauseStatusRequest, enterprise_enterprise_pb.PauseStatusResponse> {
-    path: "/enterprise_v2.API/PauseStatus";
-    requestStream: false;
-    responseStream: false;
-    requestSerialize: grpc.serialize<enterprise_enterprise_pb.PauseStatusRequest>;
-    requestDeserialize: grpc.deserialize<enterprise_enterprise_pb.PauseStatusRequest>;
-    responseSerialize: grpc.serialize<enterprise_enterprise_pb.PauseStatusResponse>;
-    responseDeserialize: grpc.deserialize<enterprise_enterprise_pb.PauseStatusResponse>;
-}
 
 export const APIService: IAPIService;
 
@@ -100,9 +70,6 @@ export interface IAPIServer extends grpc.UntypedServiceImplementation {
     getActivationCode: grpc.handleUnaryCall<enterprise_enterprise_pb.GetActivationCodeRequest, enterprise_enterprise_pb.GetActivationCodeResponse>;
     heartbeat: grpc.handleUnaryCall<enterprise_enterprise_pb.HeartbeatRequest, enterprise_enterprise_pb.HeartbeatResponse>;
     deactivate: grpc.handleUnaryCall<enterprise_enterprise_pb.DeactivateRequest, enterprise_enterprise_pb.DeactivateResponse>;
-    pause: grpc.handleUnaryCall<enterprise_enterprise_pb.PauseRequest, enterprise_enterprise_pb.PauseResponse>;
-    unpause: grpc.handleUnaryCall<enterprise_enterprise_pb.UnpauseRequest, enterprise_enterprise_pb.UnpauseResponse>;
-    pauseStatus: grpc.handleUnaryCall<enterprise_enterprise_pb.PauseStatusRequest, enterprise_enterprise_pb.PauseStatusResponse>;
 }
 
 export interface IAPIClient {
@@ -121,15 +88,6 @@ export interface IAPIClient {
     deactivate(request: enterprise_enterprise_pb.DeactivateRequest, callback: (error: grpc.ServiceError | null, response: enterprise_enterprise_pb.DeactivateResponse) => void): grpc.ClientUnaryCall;
     deactivate(request: enterprise_enterprise_pb.DeactivateRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: enterprise_enterprise_pb.DeactivateResponse) => void): grpc.ClientUnaryCall;
     deactivate(request: enterprise_enterprise_pb.DeactivateRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: enterprise_enterprise_pb.DeactivateResponse) => void): grpc.ClientUnaryCall;
-    pause(request: enterprise_enterprise_pb.PauseRequest, callback: (error: grpc.ServiceError | null, response: enterprise_enterprise_pb.PauseResponse) => void): grpc.ClientUnaryCall;
-    pause(request: enterprise_enterprise_pb.PauseRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: enterprise_enterprise_pb.PauseResponse) => void): grpc.ClientUnaryCall;
-    pause(request: enterprise_enterprise_pb.PauseRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: enterprise_enterprise_pb.PauseResponse) => void): grpc.ClientUnaryCall;
-    unpause(request: enterprise_enterprise_pb.UnpauseRequest, callback: (error: grpc.ServiceError | null, response: enterprise_enterprise_pb.UnpauseResponse) => void): grpc.ClientUnaryCall;
-    unpause(request: enterprise_enterprise_pb.UnpauseRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: enterprise_enterprise_pb.UnpauseResponse) => void): grpc.ClientUnaryCall;
-    unpause(request: enterprise_enterprise_pb.UnpauseRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: enterprise_enterprise_pb.UnpauseResponse) => void): grpc.ClientUnaryCall;
-    pauseStatus(request: enterprise_enterprise_pb.PauseStatusRequest, callback: (error: grpc.ServiceError | null, response: enterprise_enterprise_pb.PauseStatusResponse) => void): grpc.ClientUnaryCall;
-    pauseStatus(request: enterprise_enterprise_pb.PauseStatusRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: enterprise_enterprise_pb.PauseStatusResponse) => void): grpc.ClientUnaryCall;
-    pauseStatus(request: enterprise_enterprise_pb.PauseStatusRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: enterprise_enterprise_pb.PauseStatusResponse) => void): grpc.ClientUnaryCall;
 }
 
 export class APIClient extends grpc.Client implements IAPIClient {
@@ -149,13 +107,4 @@ export class APIClient extends grpc.Client implements IAPIClient {
     public deactivate(request: enterprise_enterprise_pb.DeactivateRequest, callback: (error: grpc.ServiceError | null, response: enterprise_enterprise_pb.DeactivateResponse) => void): grpc.ClientUnaryCall;
     public deactivate(request: enterprise_enterprise_pb.DeactivateRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: enterprise_enterprise_pb.DeactivateResponse) => void): grpc.ClientUnaryCall;
     public deactivate(request: enterprise_enterprise_pb.DeactivateRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: enterprise_enterprise_pb.DeactivateResponse) => void): grpc.ClientUnaryCall;
-    public pause(request: enterprise_enterprise_pb.PauseRequest, callback: (error: grpc.ServiceError | null, response: enterprise_enterprise_pb.PauseResponse) => void): grpc.ClientUnaryCall;
-    public pause(request: enterprise_enterprise_pb.PauseRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: enterprise_enterprise_pb.PauseResponse) => void): grpc.ClientUnaryCall;
-    public pause(request: enterprise_enterprise_pb.PauseRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: enterprise_enterprise_pb.PauseResponse) => void): grpc.ClientUnaryCall;
-    public unpause(request: enterprise_enterprise_pb.UnpauseRequest, callback: (error: grpc.ServiceError | null, response: enterprise_enterprise_pb.UnpauseResponse) => void): grpc.ClientUnaryCall;
-    public unpause(request: enterprise_enterprise_pb.UnpauseRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: enterprise_enterprise_pb.UnpauseResponse) => void): grpc.ClientUnaryCall;
-    public unpause(request: enterprise_enterprise_pb.UnpauseRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: enterprise_enterprise_pb.UnpauseResponse) => void): grpc.ClientUnaryCall;
-    public pauseStatus(request: enterprise_enterprise_pb.PauseStatusRequest, callback: (error: grpc.ServiceError | null, response: enterprise_enterprise_pb.PauseStatusResponse) => void): grpc.ClientUnaryCall;
-    public pauseStatus(request: enterprise_enterprise_pb.PauseStatusRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: enterprise_enterprise_pb.PauseStatusResponse) => void): grpc.ClientUnaryCall;
-    public pauseStatus(request: enterprise_enterprise_pb.PauseStatusRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: enterprise_enterprise_pb.PauseStatusResponse) => void): grpc.ClientUnaryCall;
 }

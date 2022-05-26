@@ -137,18 +137,6 @@ export class Egress extends jspb.Message {
     getUrl(): string;
     setUrl(value: string): Egress;
 
-    hasObjectStorage(): boolean;
-    clearObjectStorage(): void;
-    getObjectStorage(): pfs_pfs_pb.ObjectStorageEgress | undefined;
-    setObjectStorage(value?: pfs_pfs_pb.ObjectStorageEgress): Egress;
-
-    hasSqlDatabase(): boolean;
-    clearSqlDatabase(): void;
-    getSqlDatabase(): pfs_pfs_pb.SQLDatabaseEgress | undefined;
-    setSqlDatabase(value?: pfs_pfs_pb.SQLDatabaseEgress): Egress;
-
-    getTargetCase(): Egress.TargetCase;
-
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): Egress.AsObject;
     static toObject(includeInstance: boolean, msg: Egress): Egress.AsObject;
@@ -162,16 +150,7 @@ export class Egress extends jspb.Message {
 export namespace Egress {
     export type AsObject = {
         url: string,
-        objectStorage?: pfs_pfs_pb.ObjectStorageEgress.AsObject,
-        sqlDatabase?: pfs_pfs_pb.SQLDatabaseEgress.AsObject,
     }
-
-    export enum TargetCase {
-        TARGET_NOT_SET = 0,
-        OBJECT_STORAGE = 2,
-        SQL_DATABASE = 3,
-    }
-
 }
 
 export class Job extends jspb.Message { 
@@ -550,8 +529,6 @@ export class DatumInfo extends jspb.Message {
     getDataList(): Array<pfs_pfs_pb.FileInfo>;
     setDataList(value: Array<pfs_pfs_pb.FileInfo>): DatumInfo;
     addData(value?: pfs_pfs_pb.FileInfo, index?: number): pfs_pfs_pb.FileInfo;
-    getImageId(): string;
-    setImageId(value: string): DatumInfo;
 
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): DatumInfo.AsObject;
@@ -570,7 +547,6 @@ export namespace DatumInfo {
         stats?: ProcessStats.AsObject,
         pfsState?: pfs_pfs_pb.File.AsObject,
         dataList: Array<pfs_pfs_pb.FileInfo.AsObject>,
-        imageId: string,
     }
 }
 

@@ -115,72 +115,6 @@ function deserialize_enterprise_v2_HeartbeatResponse(buffer_arg) {
   return enterprise_enterprise_pb.HeartbeatResponse.deserializeBinary(new Uint8Array(buffer_arg));
 }
 
-function serialize_enterprise_v2_PauseRequest(arg) {
-  if (!(arg instanceof enterprise_enterprise_pb.PauseRequest)) {
-    throw new Error('Expected argument of type enterprise_v2.PauseRequest');
-  }
-  return Buffer.from(arg.serializeBinary());
-}
-
-function deserialize_enterprise_v2_PauseRequest(buffer_arg) {
-  return enterprise_enterprise_pb.PauseRequest.deserializeBinary(new Uint8Array(buffer_arg));
-}
-
-function serialize_enterprise_v2_PauseResponse(arg) {
-  if (!(arg instanceof enterprise_enterprise_pb.PauseResponse)) {
-    throw new Error('Expected argument of type enterprise_v2.PauseResponse');
-  }
-  return Buffer.from(arg.serializeBinary());
-}
-
-function deserialize_enterprise_v2_PauseResponse(buffer_arg) {
-  return enterprise_enterprise_pb.PauseResponse.deserializeBinary(new Uint8Array(buffer_arg));
-}
-
-function serialize_enterprise_v2_PauseStatusRequest(arg) {
-  if (!(arg instanceof enterprise_enterprise_pb.PauseStatusRequest)) {
-    throw new Error('Expected argument of type enterprise_v2.PauseStatusRequest');
-  }
-  return Buffer.from(arg.serializeBinary());
-}
-
-function deserialize_enterprise_v2_PauseStatusRequest(buffer_arg) {
-  return enterprise_enterprise_pb.PauseStatusRequest.deserializeBinary(new Uint8Array(buffer_arg));
-}
-
-function serialize_enterprise_v2_PauseStatusResponse(arg) {
-  if (!(arg instanceof enterprise_enterprise_pb.PauseStatusResponse)) {
-    throw new Error('Expected argument of type enterprise_v2.PauseStatusResponse');
-  }
-  return Buffer.from(arg.serializeBinary());
-}
-
-function deserialize_enterprise_v2_PauseStatusResponse(buffer_arg) {
-  return enterprise_enterprise_pb.PauseStatusResponse.deserializeBinary(new Uint8Array(buffer_arg));
-}
-
-function serialize_enterprise_v2_UnpauseRequest(arg) {
-  if (!(arg instanceof enterprise_enterprise_pb.UnpauseRequest)) {
-    throw new Error('Expected argument of type enterprise_v2.UnpauseRequest');
-  }
-  return Buffer.from(arg.serializeBinary());
-}
-
-function deserialize_enterprise_v2_UnpauseRequest(buffer_arg) {
-  return enterprise_enterprise_pb.UnpauseRequest.deserializeBinary(new Uint8Array(buffer_arg));
-}
-
-function serialize_enterprise_v2_UnpauseResponse(arg) {
-  if (!(arg instanceof enterprise_enterprise_pb.UnpauseResponse)) {
-    throw new Error('Expected argument of type enterprise_v2.UnpauseResponse');
-  }
-  return Buffer.from(arg.serializeBinary());
-}
-
-function deserialize_enterprise_v2_UnpauseResponse(buffer_arg) {
-  return enterprise_enterprise_pb.UnpauseResponse.deserializeBinary(new Uint8Array(buffer_arg));
-}
-
 
 var APIService = exports.APIService = {
   // Provide a Pachyderm enterprise token, enabling Pachyderm enterprise
@@ -243,41 +177,6 @@ deactivate: {
     requestDeserialize: deserialize_enterprise_v2_DeactivateRequest,
     responseSerialize: serialize_enterprise_v2_DeactivateResponse,
     responseDeserialize: deserialize_enterprise_v2_DeactivateResponse,
-  },
-  // Pause pauses the cluster.
-pause: {
-    path: '/enterprise_v2.API/Pause',
-    requestStream: false,
-    responseStream: false,
-    requestType: enterprise_enterprise_pb.PauseRequest,
-    responseType: enterprise_enterprise_pb.PauseResponse,
-    requestSerialize: serialize_enterprise_v2_PauseRequest,
-    requestDeserialize: deserialize_enterprise_v2_PauseRequest,
-    responseSerialize: serialize_enterprise_v2_PauseResponse,
-    responseDeserialize: deserialize_enterprise_v2_PauseResponse,
-  },
-  // Unpause unpauses the cluser.
-unpause: {
-    path: '/enterprise_v2.API/Unpause',
-    requestStream: false,
-    responseStream: false,
-    requestType: enterprise_enterprise_pb.UnpauseRequest,
-    responseType: enterprise_enterprise_pb.UnpauseResponse,
-    requestSerialize: serialize_enterprise_v2_UnpauseRequest,
-    requestDeserialize: deserialize_enterprise_v2_UnpauseRequest,
-    responseSerialize: serialize_enterprise_v2_UnpauseResponse,
-    responseDeserialize: deserialize_enterprise_v2_UnpauseResponse,
-  },
-  pauseStatus: {
-    path: '/enterprise_v2.API/PauseStatus',
-    requestStream: false,
-    responseStream: false,
-    requestType: enterprise_enterprise_pb.PauseStatusRequest,
-    responseType: enterprise_enterprise_pb.PauseStatusResponse,
-    requestSerialize: serialize_enterprise_v2_PauseStatusRequest,
-    requestDeserialize: deserialize_enterprise_v2_PauseStatusRequest,
-    responseSerialize: serialize_enterprise_v2_PauseStatusResponse,
-    responseDeserialize: deserialize_enterprise_v2_PauseStatusResponse,
   },
 };
 
