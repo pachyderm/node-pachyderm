@@ -10,6 +10,5 @@ helm repo update
 helm install pachd pachyderm/pachyderm --set deployTarget=LOCAL --version ${PACHYDERM_VERSION}
 
 kubectl wait --for=condition=available deployment -l app=pachd --timeout=5m
-kubectl wait --for=condition=available deployment -l app=loki --timeout=5m
-
+kubectl wait statefulset.apps/pachd-loki --for=jsonpath='{.status.readyReplicas}'=1 --timeout=5m
 pachctl version
