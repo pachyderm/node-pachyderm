@@ -1392,6 +1392,18 @@ export class FsckRequest extends jspb.Message {
     getFix(): boolean;
     setFix(value: boolean): FsckRequest;
 
+    hasZombieTarget(): boolean;
+    clearZombieTarget(): void;
+    getZombieTarget(): Commit | undefined;
+    setZombieTarget(value?: Commit): FsckRequest;
+
+    hasZombieAll(): boolean;
+    clearZombieAll(): void;
+    getZombieAll(): boolean;
+    setZombieAll(value: boolean): FsckRequest;
+
+    getZombieCheckCase(): FsckRequest.ZombieCheckCase;
+
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): FsckRequest.AsObject;
     static toObject(includeInstance: boolean, msg: FsckRequest): FsckRequest.AsObject;
@@ -1405,7 +1417,16 @@ export class FsckRequest extends jspb.Message {
 export namespace FsckRequest {
     export type AsObject = {
         fix: boolean,
+        zombieTarget?: Commit.AsObject,
+        zombieAll: boolean,
     }
+
+    export enum ZombieCheckCase {
+        ZOMBIE_CHECK_NOT_SET = 0,
+        ZOMBIE_TARGET = 2,
+        ZOMBIE_ALL = 3,
+    }
+
 }
 
 export class FsckResponse extends jspb.Message { 
@@ -1739,6 +1760,8 @@ export class RunLoadTestRequest extends jspb.Message {
     setBranch(value?: Branch): RunLoadTestRequest;
     getSeed(): number;
     setSeed(value: number): RunLoadTestRequest;
+    getPodPatch(): string;
+    setPodPatch(value: string): RunLoadTestRequest;
 
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): RunLoadTestRequest.AsObject;
@@ -1755,6 +1778,7 @@ export namespace RunLoadTestRequest {
         spec: string,
         branch?: Branch.AsObject,
         seed: number,
+        podPatch: string,
     }
 }
 
