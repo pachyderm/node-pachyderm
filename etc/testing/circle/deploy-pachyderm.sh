@@ -13,7 +13,7 @@ helm install pachd pachyderm/pachyderm --set deployTarget=LOCAL --version ${PACH
 # kubectl wait statefulset.apps/pachd-loki --for=jsonpath='{.status.readyReplicas}'=1 --timeout=5m
 # There is a bug with wait for json path https://github.com/kubernetes/kubectl/issues/1236
 
-sleep 60s
+sleep 120s
 kubectl wait --for=condition=available deployment -l app=pachd --timeout=5m
 kubectl wait statefulset.apps/pachd-loki --for=jsonpath='{.status.readyReplicas}'=1 --timeout=5m
 
