@@ -2405,6 +2405,7 @@ export enum JobState {
     JOB_KILLED = 6,
     JOB_EGRESSING = 7,
     JOB_FINISHING = 8,
+    JOB_UNRUNNABLE = 9,
 }
 
 export enum DatumState {
