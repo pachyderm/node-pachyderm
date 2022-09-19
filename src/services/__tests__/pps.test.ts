@@ -191,7 +191,7 @@ describe('services/pps', () => {
         projectId: 'default',
       });
 
-      const datums = await pachClient.pps().listDatums({
+      let datums = await pachClient.pps().listDatums({
         jobId: jobId || '',
         pipelineName: 'listDatums',
       });
@@ -200,6 +200,22 @@ describe('services/pps', () => {
       expect(datums[0].state).toEqual(DatumState.SUCCESS);
       expect(datums[0].dataList[0]?.file?.path).toEqual('/dummyData.csv');
       expect(datums[0].dataList[0]?.sizeBytes).toEqual(5);
+
+      datums = await pachClient.pps().listDatums({
+        jobId: jobId || '',
+        pipelineName: 'listDatums',
+        filter: [DatumState.FAILED],
+      });
+
+      expect(datums).toHaveLength(0);
+
+      datums = await pachClient.pps().listDatums({
+        jobId: jobId || '',
+        pipelineName: 'listDatums',
+        filter: [DatumState.FAILED, DatumState.SUCCESS],
+      });
+
+      expect(datums).toHaveLength(1);
 
       const datum = await pachClient.pps().inspectDatum({
         id: datums[0]?.datum?.id || '',
