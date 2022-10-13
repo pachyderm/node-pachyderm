@@ -280,6 +280,8 @@ export namespace Spout {
 }
 
 export class PFSInput extends jspb.Message { 
+    getProject(): string;
+    setProject(value: string): PFSInput;
     getName(): string;
     setName(value: string): PFSInput;
     getRepo(): string;
@@ -322,6 +324,7 @@ export class PFSInput extends jspb.Message {
 
 export namespace PFSInput {
     export type AsObject = {
+        project: string,
         name: string,
         repo: string,
         repoType: string,
@@ -341,6 +344,8 @@ export namespace PFSInput {
 export class CronInput extends jspb.Message { 
     getName(): string;
     setName(value: string): CronInput;
+    getProject(): string;
+    setProject(value: string): CronInput;
     getRepo(): string;
     setRepo(value: string): CronInput;
     getCommit(): string;
@@ -368,6 +373,7 @@ export class CronInput extends jspb.Message {
 export namespace CronInput {
     export type AsObject = {
         name: string,
+        project: string,
         repo: string,
         commit: string,
         spec: string,
@@ -1058,6 +1064,11 @@ export namespace Worker {
 }
 
 export class Pipeline extends jspb.Message { 
+
+    hasProject(): boolean;
+    clearProject(): void;
+    getProject(): pfs_pfs_pb.Project | undefined;
+    setProject(value?: pfs_pfs_pb.Project): Pipeline;
     getName(): string;
     setName(value: string): Pipeline;
 
@@ -1073,6 +1084,7 @@ export class Pipeline extends jspb.Message {
 
 export namespace Pipeline {
     export type AsObject = {
+        project?: pfs_pfs_pb.Project.AsObject,
         name: string,
     }
 }
@@ -1648,6 +1660,8 @@ export namespace GetLogsRequest {
 }
 
 export class LogMessage extends jspb.Message { 
+    getProjectName(): string;
+    setProjectName(value: string): LogMessage;
     getPipelineName(): string;
     setPipelineName(value: string): LogMessage;
     getJobId(): string;
@@ -1684,6 +1698,7 @@ export class LogMessage extends jspb.Message {
 
 export namespace LogMessage {
     export type AsObject = {
+        projectName: string,
         pipelineName: string,
         jobId: string,
         workerId: string,
@@ -2048,6 +2063,11 @@ export class ListPipelineRequest extends jspb.Message {
     getJqfilter(): string;
     setJqfilter(value: string): ListPipelineRequest;
 
+    hasCommitSet(): boolean;
+    clearCommitSet(): void;
+    getCommitSet(): pfs_pfs_pb.CommitSet | undefined;
+    setCommitSet(value?: pfs_pfs_pb.CommitSet): ListPipelineRequest;
+
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): ListPipelineRequest.AsObject;
     static toObject(includeInstance: boolean, msg: ListPipelineRequest): ListPipelineRequest.AsObject;
@@ -2064,6 +2084,7 @@ export namespace ListPipelineRequest {
         history: number,
         details: boolean,
         jqfilter: string,
+        commitSet?: pfs_pfs_pb.CommitSet.AsObject,
     }
 }
 

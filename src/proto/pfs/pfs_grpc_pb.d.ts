@@ -50,6 +50,7 @@ interface IAPIService extends grpc.ServiceDefinition<grpc.UntypedServiceImplemen
     addFileSet: IAPIService_IAddFileSet;
     renewFileSet: IAPIService_IRenewFileSet;
     composeFileSet: IAPIService_IComposeFileSet;
+    shardFileSet: IAPIService_IShardFileSet;
     checkStorage: IAPIService_ICheckStorage;
     putCache: IAPIService_IPutCache;
     getCache: IAPIService_IGetCache;
@@ -58,6 +59,10 @@ interface IAPIService extends grpc.ServiceDefinition<grpc.UntypedServiceImplemen
     runLoadTestDefault: IAPIService_IRunLoadTestDefault;
     listTask: IAPIService_IListTask;
     egress: IAPIService_IEgress;
+    createProject: IAPIService_ICreateProject;
+    inspectProject: IAPIService_IInspectProject;
+    listProject: IAPIService_IListProject;
+    deleteProject: IAPIService_IDeleteProject;
 }
 
 interface IAPIService_ICreateRepo extends grpc.MethodDefinition<pfs_pfs_pb.CreateRepoRequest, google_protobuf_empty_pb.Empty> {
@@ -366,6 +371,15 @@ interface IAPIService_IComposeFileSet extends grpc.MethodDefinition<pfs_pfs_pb.C
     responseSerialize: grpc.serialize<pfs_pfs_pb.CreateFileSetResponse>;
     responseDeserialize: grpc.deserialize<pfs_pfs_pb.CreateFileSetResponse>;
 }
+interface IAPIService_IShardFileSet extends grpc.MethodDefinition<pfs_pfs_pb.ShardFileSetRequest, pfs_pfs_pb.ShardFileSetResponse> {
+    path: "/pfs_v2.API/ShardFileSet";
+    requestStream: false;
+    responseStream: false;
+    requestSerialize: grpc.serialize<pfs_pfs_pb.ShardFileSetRequest>;
+    requestDeserialize: grpc.deserialize<pfs_pfs_pb.ShardFileSetRequest>;
+    responseSerialize: grpc.serialize<pfs_pfs_pb.ShardFileSetResponse>;
+    responseDeserialize: grpc.deserialize<pfs_pfs_pb.ShardFileSetResponse>;
+}
 interface IAPIService_ICheckStorage extends grpc.MethodDefinition<pfs_pfs_pb.CheckStorageRequest, pfs_pfs_pb.CheckStorageResponse> {
     path: "/pfs_v2.API/CheckStorage";
     requestStream: false;
@@ -438,6 +452,42 @@ interface IAPIService_IEgress extends grpc.MethodDefinition<pfs_pfs_pb.EgressReq
     responseSerialize: grpc.serialize<pfs_pfs_pb.EgressResponse>;
     responseDeserialize: grpc.deserialize<pfs_pfs_pb.EgressResponse>;
 }
+interface IAPIService_ICreateProject extends grpc.MethodDefinition<pfs_pfs_pb.CreateProjectRequest, google_protobuf_empty_pb.Empty> {
+    path: "/pfs_v2.API/CreateProject";
+    requestStream: false;
+    responseStream: false;
+    requestSerialize: grpc.serialize<pfs_pfs_pb.CreateProjectRequest>;
+    requestDeserialize: grpc.deserialize<pfs_pfs_pb.CreateProjectRequest>;
+    responseSerialize: grpc.serialize<google_protobuf_empty_pb.Empty>;
+    responseDeserialize: grpc.deserialize<google_protobuf_empty_pb.Empty>;
+}
+interface IAPIService_IInspectProject extends grpc.MethodDefinition<pfs_pfs_pb.InspectProjectRequest, pfs_pfs_pb.ProjectInfo> {
+    path: "/pfs_v2.API/InspectProject";
+    requestStream: false;
+    responseStream: false;
+    requestSerialize: grpc.serialize<pfs_pfs_pb.InspectProjectRequest>;
+    requestDeserialize: grpc.deserialize<pfs_pfs_pb.InspectProjectRequest>;
+    responseSerialize: grpc.serialize<pfs_pfs_pb.ProjectInfo>;
+    responseDeserialize: grpc.deserialize<pfs_pfs_pb.ProjectInfo>;
+}
+interface IAPIService_IListProject extends grpc.MethodDefinition<pfs_pfs_pb.ListProjectRequest, pfs_pfs_pb.ProjectInfo> {
+    path: "/pfs_v2.API/ListProject";
+    requestStream: false;
+    responseStream: true;
+    requestSerialize: grpc.serialize<pfs_pfs_pb.ListProjectRequest>;
+    requestDeserialize: grpc.deserialize<pfs_pfs_pb.ListProjectRequest>;
+    responseSerialize: grpc.serialize<pfs_pfs_pb.ProjectInfo>;
+    responseDeserialize: grpc.deserialize<pfs_pfs_pb.ProjectInfo>;
+}
+interface IAPIService_IDeleteProject extends grpc.MethodDefinition<pfs_pfs_pb.DeleteProjectRequest, google_protobuf_empty_pb.Empty> {
+    path: "/pfs_v2.API/DeleteProject";
+    requestStream: false;
+    responseStream: false;
+    requestSerialize: grpc.serialize<pfs_pfs_pb.DeleteProjectRequest>;
+    requestDeserialize: grpc.deserialize<pfs_pfs_pb.DeleteProjectRequest>;
+    responseSerialize: grpc.serialize<google_protobuf_empty_pb.Empty>;
+    responseDeserialize: grpc.deserialize<google_protobuf_empty_pb.Empty>;
+}
 
 export const APIService: IAPIService;
 
@@ -476,6 +526,7 @@ export interface IAPIServer extends grpc.UntypedServiceImplementation {
     addFileSet: grpc.handleUnaryCall<pfs_pfs_pb.AddFileSetRequest, google_protobuf_empty_pb.Empty>;
     renewFileSet: grpc.handleUnaryCall<pfs_pfs_pb.RenewFileSetRequest, google_protobuf_empty_pb.Empty>;
     composeFileSet: grpc.handleUnaryCall<pfs_pfs_pb.ComposeFileSetRequest, pfs_pfs_pb.CreateFileSetResponse>;
+    shardFileSet: grpc.handleUnaryCall<pfs_pfs_pb.ShardFileSetRequest, pfs_pfs_pb.ShardFileSetResponse>;
     checkStorage: grpc.handleUnaryCall<pfs_pfs_pb.CheckStorageRequest, pfs_pfs_pb.CheckStorageResponse>;
     putCache: grpc.handleUnaryCall<pfs_pfs_pb.PutCacheRequest, google_protobuf_empty_pb.Empty>;
     getCache: grpc.handleUnaryCall<pfs_pfs_pb.GetCacheRequest, pfs_pfs_pb.GetCacheResponse>;
@@ -484,6 +535,10 @@ export interface IAPIServer extends grpc.UntypedServiceImplementation {
     runLoadTestDefault: grpc.handleUnaryCall<google_protobuf_empty_pb.Empty, pfs_pfs_pb.RunLoadTestResponse>;
     listTask: grpc.handleServerStreamingCall<task_task_pb.ListTaskRequest, task_task_pb.TaskInfo>;
     egress: grpc.handleUnaryCall<pfs_pfs_pb.EgressRequest, pfs_pfs_pb.EgressResponse>;
+    createProject: grpc.handleUnaryCall<pfs_pfs_pb.CreateProjectRequest, google_protobuf_empty_pb.Empty>;
+    inspectProject: grpc.handleUnaryCall<pfs_pfs_pb.InspectProjectRequest, pfs_pfs_pb.ProjectInfo>;
+    listProject: grpc.handleServerStreamingCall<pfs_pfs_pb.ListProjectRequest, pfs_pfs_pb.ProjectInfo>;
+    deleteProject: grpc.handleUnaryCall<pfs_pfs_pb.DeleteProjectRequest, google_protobuf_empty_pb.Empty>;
 }
 
 export interface IAPIClient {
@@ -578,6 +633,9 @@ export interface IAPIClient {
     composeFileSet(request: pfs_pfs_pb.ComposeFileSetRequest, callback: (error: grpc.ServiceError | null, response: pfs_pfs_pb.CreateFileSetResponse) => void): grpc.ClientUnaryCall;
     composeFileSet(request: pfs_pfs_pb.ComposeFileSetRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: pfs_pfs_pb.CreateFileSetResponse) => void): grpc.ClientUnaryCall;
     composeFileSet(request: pfs_pfs_pb.ComposeFileSetRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: pfs_pfs_pb.CreateFileSetResponse) => void): grpc.ClientUnaryCall;
+    shardFileSet(request: pfs_pfs_pb.ShardFileSetRequest, callback: (error: grpc.ServiceError | null, response: pfs_pfs_pb.ShardFileSetResponse) => void): grpc.ClientUnaryCall;
+    shardFileSet(request: pfs_pfs_pb.ShardFileSetRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: pfs_pfs_pb.ShardFileSetResponse) => void): grpc.ClientUnaryCall;
+    shardFileSet(request: pfs_pfs_pb.ShardFileSetRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: pfs_pfs_pb.ShardFileSetResponse) => void): grpc.ClientUnaryCall;
     checkStorage(request: pfs_pfs_pb.CheckStorageRequest, callback: (error: grpc.ServiceError | null, response: pfs_pfs_pb.CheckStorageResponse) => void): grpc.ClientUnaryCall;
     checkStorage(request: pfs_pfs_pb.CheckStorageRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: pfs_pfs_pb.CheckStorageResponse) => void): grpc.ClientUnaryCall;
     checkStorage(request: pfs_pfs_pb.CheckStorageRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: pfs_pfs_pb.CheckStorageResponse) => void): grpc.ClientUnaryCall;
@@ -601,6 +659,17 @@ export interface IAPIClient {
     egress(request: pfs_pfs_pb.EgressRequest, callback: (error: grpc.ServiceError | null, response: pfs_pfs_pb.EgressResponse) => void): grpc.ClientUnaryCall;
     egress(request: pfs_pfs_pb.EgressRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: pfs_pfs_pb.EgressResponse) => void): grpc.ClientUnaryCall;
     egress(request: pfs_pfs_pb.EgressRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: pfs_pfs_pb.EgressResponse) => void): grpc.ClientUnaryCall;
+    createProject(request: pfs_pfs_pb.CreateProjectRequest, callback: (error: grpc.ServiceError | null, response: google_protobuf_empty_pb.Empty) => void): grpc.ClientUnaryCall;
+    createProject(request: pfs_pfs_pb.CreateProjectRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: google_protobuf_empty_pb.Empty) => void): grpc.ClientUnaryCall;
+    createProject(request: pfs_pfs_pb.CreateProjectRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: google_protobuf_empty_pb.Empty) => void): grpc.ClientUnaryCall;
+    inspectProject(request: pfs_pfs_pb.InspectProjectRequest, callback: (error: grpc.ServiceError | null, response: pfs_pfs_pb.ProjectInfo) => void): grpc.ClientUnaryCall;
+    inspectProject(request: pfs_pfs_pb.InspectProjectRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: pfs_pfs_pb.ProjectInfo) => void): grpc.ClientUnaryCall;
+    inspectProject(request: pfs_pfs_pb.InspectProjectRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: pfs_pfs_pb.ProjectInfo) => void): grpc.ClientUnaryCall;
+    listProject(request: pfs_pfs_pb.ListProjectRequest, options?: Partial<grpc.CallOptions>): grpc.ClientReadableStream<pfs_pfs_pb.ProjectInfo>;
+    listProject(request: pfs_pfs_pb.ListProjectRequest, metadata?: grpc.Metadata, options?: Partial<grpc.CallOptions>): grpc.ClientReadableStream<pfs_pfs_pb.ProjectInfo>;
+    deleteProject(request: pfs_pfs_pb.DeleteProjectRequest, callback: (error: grpc.ServiceError | null, response: google_protobuf_empty_pb.Empty) => void): grpc.ClientUnaryCall;
+    deleteProject(request: pfs_pfs_pb.DeleteProjectRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: google_protobuf_empty_pb.Empty) => void): grpc.ClientUnaryCall;
+    deleteProject(request: pfs_pfs_pb.DeleteProjectRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: google_protobuf_empty_pb.Empty) => void): grpc.ClientUnaryCall;
 }
 
 export class APIClient extends grpc.Client implements IAPIClient {
@@ -696,6 +765,9 @@ export class APIClient extends grpc.Client implements IAPIClient {
     public composeFileSet(request: pfs_pfs_pb.ComposeFileSetRequest, callback: (error: grpc.ServiceError | null, response: pfs_pfs_pb.CreateFileSetResponse) => void): grpc.ClientUnaryCall;
     public composeFileSet(request: pfs_pfs_pb.ComposeFileSetRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: pfs_pfs_pb.CreateFileSetResponse) => void): grpc.ClientUnaryCall;
     public composeFileSet(request: pfs_pfs_pb.ComposeFileSetRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: pfs_pfs_pb.CreateFileSetResponse) => void): grpc.ClientUnaryCall;
+    public shardFileSet(request: pfs_pfs_pb.ShardFileSetRequest, callback: (error: grpc.ServiceError | null, response: pfs_pfs_pb.ShardFileSetResponse) => void): grpc.ClientUnaryCall;
+    public shardFileSet(request: pfs_pfs_pb.ShardFileSetRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: pfs_pfs_pb.ShardFileSetResponse) => void): grpc.ClientUnaryCall;
+    public shardFileSet(request: pfs_pfs_pb.ShardFileSetRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: pfs_pfs_pb.ShardFileSetResponse) => void): grpc.ClientUnaryCall;
     public checkStorage(request: pfs_pfs_pb.CheckStorageRequest, callback: (error: grpc.ServiceError | null, response: pfs_pfs_pb.CheckStorageResponse) => void): grpc.ClientUnaryCall;
     public checkStorage(request: pfs_pfs_pb.CheckStorageRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: pfs_pfs_pb.CheckStorageResponse) => void): grpc.ClientUnaryCall;
     public checkStorage(request: pfs_pfs_pb.CheckStorageRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: pfs_pfs_pb.CheckStorageResponse) => void): grpc.ClientUnaryCall;
@@ -719,4 +791,15 @@ export class APIClient extends grpc.Client implements IAPIClient {
     public egress(request: pfs_pfs_pb.EgressRequest, callback: (error: grpc.ServiceError | null, response: pfs_pfs_pb.EgressResponse) => void): grpc.ClientUnaryCall;
     public egress(request: pfs_pfs_pb.EgressRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: pfs_pfs_pb.EgressResponse) => void): grpc.ClientUnaryCall;
     public egress(request: pfs_pfs_pb.EgressRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: pfs_pfs_pb.EgressResponse) => void): grpc.ClientUnaryCall;
+    public createProject(request: pfs_pfs_pb.CreateProjectRequest, callback: (error: grpc.ServiceError | null, response: google_protobuf_empty_pb.Empty) => void): grpc.ClientUnaryCall;
+    public createProject(request: pfs_pfs_pb.CreateProjectRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: google_protobuf_empty_pb.Empty) => void): grpc.ClientUnaryCall;
+    public createProject(request: pfs_pfs_pb.CreateProjectRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: google_protobuf_empty_pb.Empty) => void): grpc.ClientUnaryCall;
+    public inspectProject(request: pfs_pfs_pb.InspectProjectRequest, callback: (error: grpc.ServiceError | null, response: pfs_pfs_pb.ProjectInfo) => void): grpc.ClientUnaryCall;
+    public inspectProject(request: pfs_pfs_pb.InspectProjectRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: pfs_pfs_pb.ProjectInfo) => void): grpc.ClientUnaryCall;
+    public inspectProject(request: pfs_pfs_pb.InspectProjectRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: pfs_pfs_pb.ProjectInfo) => void): grpc.ClientUnaryCall;
+    public listProject(request: pfs_pfs_pb.ListProjectRequest, options?: Partial<grpc.CallOptions>): grpc.ClientReadableStream<pfs_pfs_pb.ProjectInfo>;
+    public listProject(request: pfs_pfs_pb.ListProjectRequest, metadata?: grpc.Metadata, options?: Partial<grpc.CallOptions>): grpc.ClientReadableStream<pfs_pfs_pb.ProjectInfo>;
+    public deleteProject(request: pfs_pfs_pb.DeleteProjectRequest, callback: (error: grpc.ServiceError | null, response: google_protobuf_empty_pb.Empty) => void): grpc.ClientUnaryCall;
+    public deleteProject(request: pfs_pfs_pb.DeleteProjectRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: google_protobuf_empty_pb.Empty) => void): grpc.ClientUnaryCall;
+    public deleteProject(request: pfs_pfs_pb.DeleteProjectRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: google_protobuf_empty_pb.Empty) => void): grpc.ClientUnaryCall;
 }

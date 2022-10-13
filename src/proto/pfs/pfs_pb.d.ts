@@ -20,6 +20,11 @@ export class Repo extends jspb.Message {
     getType(): string;
     setType(value: string): Repo;
 
+    hasProject(): boolean;
+    clearProject(): void;
+    getProject(): Project | undefined;
+    setProject(value?: Project): Repo;
+
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): Repo.AsObject;
     static toObject(includeInstance: boolean, msg: Repo): Repo.AsObject;
@@ -34,6 +39,7 @@ export namespace Repo {
     export type AsObject = {
         name: string,
         type: string,
+        project?: Project.AsObject,
     }
 }
 
@@ -521,6 +527,52 @@ export namespace FileInfo {
     }
 }
 
+export class Project extends jspb.Message { 
+    getName(): string;
+    setName(value: string): Project;
+
+    serializeBinary(): Uint8Array;
+    toObject(includeInstance?: boolean): Project.AsObject;
+    static toObject(includeInstance: boolean, msg: Project): Project.AsObject;
+    static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+    static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+    static serializeBinaryToWriter(message: Project, writer: jspb.BinaryWriter): void;
+    static deserializeBinary(bytes: Uint8Array): Project;
+    static deserializeBinaryFromReader(message: Project, reader: jspb.BinaryReader): Project;
+}
+
+export namespace Project {
+    export type AsObject = {
+        name: string,
+    }
+}
+
+export class ProjectInfo extends jspb.Message { 
+
+    hasProject(): boolean;
+    clearProject(): void;
+    getProject(): Project | undefined;
+    setProject(value?: Project): ProjectInfo;
+    getDescription(): string;
+    setDescription(value: string): ProjectInfo;
+
+    serializeBinary(): Uint8Array;
+    toObject(includeInstance?: boolean): ProjectInfo.AsObject;
+    static toObject(includeInstance: boolean, msg: ProjectInfo): ProjectInfo.AsObject;
+    static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+    static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+    static serializeBinaryToWriter(message: ProjectInfo, writer: jspb.BinaryWriter): void;
+    static deserializeBinary(bytes: Uint8Array): ProjectInfo;
+    static deserializeBinaryFromReader(message: ProjectInfo, reader: jspb.BinaryReader): ProjectInfo;
+}
+
+export namespace ProjectInfo {
+    export type AsObject = {
+        project?: Project.AsObject,
+        description: string,
+    }
+}
+
 export class CreateRepoRequest extends jspb.Message { 
 
     hasRepo(): boolean;
@@ -734,6 +786,11 @@ export class ListCommitRequest extends jspb.Message {
     getOriginKind(): OriginKind;
     setOriginKind(value: OriginKind): ListCommitRequest;
 
+    hasStartedTime(): boolean;
+    clearStartedTime(): void;
+    getStartedTime(): google_protobuf_timestamp_pb.Timestamp | undefined;
+    setStartedTime(value?: google_protobuf_timestamp_pb.Timestamp): ListCommitRequest;
+
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): ListCommitRequest.AsObject;
     static toObject(includeInstance: boolean, msg: ListCommitRequest): ListCommitRequest.AsObject;
@@ -753,6 +810,7 @@ export namespace ListCommitRequest {
         reverse: boolean,
         all: boolean,
         originKind: OriginKind,
+        startedTime?: google_protobuf_timestamp_pb.Timestamp.AsObject,
     }
 }
 
@@ -1027,6 +1085,101 @@ export namespace DeleteBranchRequest {
     }
 }
 
+export class CreateProjectRequest extends jspb.Message { 
+
+    hasProject(): boolean;
+    clearProject(): void;
+    getProject(): Project | undefined;
+    setProject(value?: Project): CreateProjectRequest;
+    getDescription(): string;
+    setDescription(value: string): CreateProjectRequest;
+    getUpdate(): boolean;
+    setUpdate(value: boolean): CreateProjectRequest;
+
+    serializeBinary(): Uint8Array;
+    toObject(includeInstance?: boolean): CreateProjectRequest.AsObject;
+    static toObject(includeInstance: boolean, msg: CreateProjectRequest): CreateProjectRequest.AsObject;
+    static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+    static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+    static serializeBinaryToWriter(message: CreateProjectRequest, writer: jspb.BinaryWriter): void;
+    static deserializeBinary(bytes: Uint8Array): CreateProjectRequest;
+    static deserializeBinaryFromReader(message: CreateProjectRequest, reader: jspb.BinaryReader): CreateProjectRequest;
+}
+
+export namespace CreateProjectRequest {
+    export type AsObject = {
+        project?: Project.AsObject,
+        description: string,
+        update: boolean,
+    }
+}
+
+export class InspectProjectRequest extends jspb.Message { 
+
+    hasProject(): boolean;
+    clearProject(): void;
+    getProject(): Project | undefined;
+    setProject(value?: Project): InspectProjectRequest;
+
+    serializeBinary(): Uint8Array;
+    toObject(includeInstance?: boolean): InspectProjectRequest.AsObject;
+    static toObject(includeInstance: boolean, msg: InspectProjectRequest): InspectProjectRequest.AsObject;
+    static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+    static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+    static serializeBinaryToWriter(message: InspectProjectRequest, writer: jspb.BinaryWriter): void;
+    static deserializeBinary(bytes: Uint8Array): InspectProjectRequest;
+    static deserializeBinaryFromReader(message: InspectProjectRequest, reader: jspb.BinaryReader): InspectProjectRequest;
+}
+
+export namespace InspectProjectRequest {
+    export type AsObject = {
+        project?: Project.AsObject,
+    }
+}
+
+export class ListProjectRequest extends jspb.Message { 
+
+    serializeBinary(): Uint8Array;
+    toObject(includeInstance?: boolean): ListProjectRequest.AsObject;
+    static toObject(includeInstance: boolean, msg: ListProjectRequest): ListProjectRequest.AsObject;
+    static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+    static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+    static serializeBinaryToWriter(message: ListProjectRequest, writer: jspb.BinaryWriter): void;
+    static deserializeBinary(bytes: Uint8Array): ListProjectRequest;
+    static deserializeBinaryFromReader(message: ListProjectRequest, reader: jspb.BinaryReader): ListProjectRequest;
+}
+
+export namespace ListProjectRequest {
+    export type AsObject = {
+    }
+}
+
+export class DeleteProjectRequest extends jspb.Message { 
+
+    hasProject(): boolean;
+    clearProject(): void;
+    getProject(): Project | undefined;
+    setProject(value?: Project): DeleteProjectRequest;
+    getForce(): boolean;
+    setForce(value: boolean): DeleteProjectRequest;
+
+    serializeBinary(): Uint8Array;
+    toObject(includeInstance?: boolean): DeleteProjectRequest.AsObject;
+    static toObject(includeInstance: boolean, msg: DeleteProjectRequest): DeleteProjectRequest.AsObject;
+    static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+    static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+    static serializeBinaryToWriter(message: DeleteProjectRequest, writer: jspb.BinaryWriter): void;
+    static deserializeBinary(bytes: Uint8Array): DeleteProjectRequest;
+    static deserializeBinaryFromReader(message: DeleteProjectRequest, reader: jspb.BinaryReader): DeleteProjectRequest;
+}
+
+export namespace DeleteProjectRequest {
+    export type AsObject = {
+        project?: Project.AsObject,
+        force: boolean,
+    }
+}
+
 export class AddFile extends jspb.Message { 
     getPath(): string;
     setPath(value: string): AddFile;
@@ -1214,6 +1367,11 @@ export class GetFileRequest extends jspb.Message {
     getOffset(): number;
     setOffset(value: number): GetFileRequest;
 
+    hasPathRange(): boolean;
+    clearPathRange(): void;
+    getPathRange(): PathRange | undefined;
+    setPathRange(value?: PathRange): GetFileRequest;
+
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): GetFileRequest.AsObject;
     static toObject(includeInstance: boolean, msg: GetFileRequest): GetFileRequest.AsObject;
@@ -1229,6 +1387,7 @@ export namespace GetFileRequest {
         file?: File.AsObject,
         url: string,
         offset: number,
+        pathRange?: PathRange.AsObject,
     }
 }
 
@@ -1310,6 +1469,11 @@ export class GlobFileRequest extends jspb.Message {
     getPattern(): string;
     setPattern(value: string): GlobFileRequest;
 
+    hasPathRange(): boolean;
+    clearPathRange(): void;
+    getPathRange(): PathRange | undefined;
+    setPathRange(value?: PathRange): GlobFileRequest;
+
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): GlobFileRequest.AsObject;
     static toObject(includeInstance: boolean, msg: GlobFileRequest): GlobFileRequest.AsObject;
@@ -1324,6 +1488,7 @@ export namespace GlobFileRequest {
     export type AsObject = {
         commit?: Commit.AsObject,
         pattern: string,
+        pathRange?: PathRange.AsObject,
     }
 }
 
@@ -1551,6 +1716,8 @@ export class ComposeFileSetRequest extends jspb.Message {
     addFileSetIds(value: string, index?: number): string;
     getTtlSeconds(): number;
     setTtlSeconds(value: number): ComposeFileSetRequest;
+    getCompact(): boolean;
+    setCompact(value: boolean): ComposeFileSetRequest;
 
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): ComposeFileSetRequest.AsObject;
@@ -1566,6 +1733,72 @@ export namespace ComposeFileSetRequest {
     export type AsObject = {
         fileSetIdsList: Array<string>,
         ttlSeconds: number,
+        compact: boolean,
+    }
+}
+
+export class ShardFileSetRequest extends jspb.Message { 
+    getFileSetId(): string;
+    setFileSetId(value: string): ShardFileSetRequest;
+
+    serializeBinary(): Uint8Array;
+    toObject(includeInstance?: boolean): ShardFileSetRequest.AsObject;
+    static toObject(includeInstance: boolean, msg: ShardFileSetRequest): ShardFileSetRequest.AsObject;
+    static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+    static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+    static serializeBinaryToWriter(message: ShardFileSetRequest, writer: jspb.BinaryWriter): void;
+    static deserializeBinary(bytes: Uint8Array): ShardFileSetRequest;
+    static deserializeBinaryFromReader(message: ShardFileSetRequest, reader: jspb.BinaryReader): ShardFileSetRequest;
+}
+
+export namespace ShardFileSetRequest {
+    export type AsObject = {
+        fileSetId: string,
+    }
+}
+
+export class PathRange extends jspb.Message { 
+    getLower(): string;
+    setLower(value: string): PathRange;
+    getUpper(): string;
+    setUpper(value: string): PathRange;
+
+    serializeBinary(): Uint8Array;
+    toObject(includeInstance?: boolean): PathRange.AsObject;
+    static toObject(includeInstance: boolean, msg: PathRange): PathRange.AsObject;
+    static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+    static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+    static serializeBinaryToWriter(message: PathRange, writer: jspb.BinaryWriter): void;
+    static deserializeBinary(bytes: Uint8Array): PathRange;
+    static deserializeBinaryFromReader(message: PathRange, reader: jspb.BinaryReader): PathRange;
+}
+
+export namespace PathRange {
+    export type AsObject = {
+        lower: string,
+        upper: string,
+    }
+}
+
+export class ShardFileSetResponse extends jspb.Message { 
+    clearShardsList(): void;
+    getShardsList(): Array<PathRange>;
+    setShardsList(value: Array<PathRange>): ShardFileSetResponse;
+    addShards(value?: PathRange, index?: number): PathRange;
+
+    serializeBinary(): Uint8Array;
+    toObject(includeInstance?: boolean): ShardFileSetResponse.AsObject;
+    static toObject(includeInstance: boolean, msg: ShardFileSetResponse): ShardFileSetResponse.AsObject;
+    static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+    static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+    static serializeBinaryToWriter(message: ShardFileSetResponse, writer: jspb.BinaryWriter): void;
+    static deserializeBinary(bytes: Uint8Array): ShardFileSetResponse;
+    static deserializeBinaryFromReader(message: ShardFileSetResponse, reader: jspb.BinaryReader): ShardFileSetResponse;
+}
+
+export namespace ShardFileSetResponse {
+    export type AsObject = {
+        shardsList: Array<PathRange.AsObject>,
     }
 }
 

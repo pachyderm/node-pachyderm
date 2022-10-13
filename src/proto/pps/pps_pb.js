@@ -3526,6 +3526,7 @@ proto.pps_v2.PFSInput.prototype.toObject = function(opt_includeInstance) {
  */
 proto.pps_v2.PFSInput.toObject = function(includeInstance, msg) {
   var f, obj = {
+    project: jspb.Message.getFieldWithDefault(msg, 14, ""),
     name: jspb.Message.getFieldWithDefault(msg, 1, ""),
     repo: jspb.Message.getFieldWithDefault(msg, 2, ""),
     repoType: jspb.Message.getFieldWithDefault(msg, 13, ""),
@@ -3575,6 +3576,10 @@ proto.pps_v2.PFSInput.deserializeBinaryFromReader = function(msg, reader) {
     }
     var field = reader.getFieldNumber();
     switch (field) {
+    case 14:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setProject(value);
+      break;
     case 1:
       var value = /** @type {string} */ (reader.readString());
       msg.setName(value);
@@ -3657,6 +3662,13 @@ proto.pps_v2.PFSInput.prototype.serializeBinary = function() {
  */
 proto.pps_v2.PFSInput.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
+  f = message.getProject();
+  if (f.length > 0) {
+    writer.writeString(
+      14,
+      f
+    );
+  }
   f = message.getName();
   if (f.length > 0) {
     writer.writeString(
@@ -3749,6 +3761,24 @@ proto.pps_v2.PFSInput.serializeBinaryToWriter = function(message, writer) {
       pfs_pfs_pb.Trigger.serializeBinaryToWriter
     );
   }
+};
+
+
+/**
+ * optional string project = 14;
+ * @return {string}
+ */
+proto.pps_v2.PFSInput.prototype.getProject = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 14, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.pps_v2.PFSInput} returns this
+ */
+proto.pps_v2.PFSInput.prototype.setProject = function(value) {
+  return jspb.Message.setProto3StringField(this, 14, value);
 };
 
 
@@ -4038,6 +4068,7 @@ proto.pps_v2.CronInput.prototype.toObject = function(opt_includeInstance) {
 proto.pps_v2.CronInput.toObject = function(includeInstance, msg) {
   var f, obj = {
     name: jspb.Message.getFieldWithDefault(msg, 1, ""),
+    project: jspb.Message.getFieldWithDefault(msg, 7, ""),
     repo: jspb.Message.getFieldWithDefault(msg, 2, ""),
     commit: jspb.Message.getFieldWithDefault(msg, 3, ""),
     spec: jspb.Message.getFieldWithDefault(msg, 4, ""),
@@ -4082,6 +4113,10 @@ proto.pps_v2.CronInput.deserializeBinaryFromReader = function(msg, reader) {
     case 1:
       var value = /** @type {string} */ (reader.readString());
       msg.setName(value);
+      break;
+    case 7:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setProject(value);
       break;
     case 2:
       var value = /** @type {string} */ (reader.readString());
@@ -4140,6 +4175,13 @@ proto.pps_v2.CronInput.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
+  f = message.getProject();
+  if (f.length > 0) {
+    writer.writeString(
+      7,
+      f
+    );
+  }
   f = message.getRepo();
   if (f.length > 0) {
     writer.writeString(
@@ -4194,6 +4236,24 @@ proto.pps_v2.CronInput.prototype.getName = function() {
  */
 proto.pps_v2.CronInput.prototype.setName = function(value) {
   return jspb.Message.setProto3StringField(this, 1, value);
+};
+
+
+/**
+ * optional string project = 7;
+ * @return {string}
+ */
+proto.pps_v2.CronInput.prototype.getProject = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 7, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.pps_v2.CronInput} returns this
+ */
+proto.pps_v2.CronInput.prototype.setProject = function(value) {
+  return jspb.Message.setProto3StringField(this, 7, value);
 };
 
 
@@ -9650,6 +9710,7 @@ proto.pps_v2.Pipeline.prototype.toObject = function(opt_includeInstance) {
  */
 proto.pps_v2.Pipeline.toObject = function(includeInstance, msg) {
   var f, obj = {
+    project: (f = msg.getProject()) && pfs_pfs_pb.Project.toObject(includeInstance, f),
     name: jspb.Message.getFieldWithDefault(msg, 1, "")
   };
 
@@ -9687,6 +9748,11 @@ proto.pps_v2.Pipeline.deserializeBinaryFromReader = function(msg, reader) {
     }
     var field = reader.getFieldNumber();
     switch (field) {
+    case 2:
+      var value = new pfs_pfs_pb.Project;
+      reader.readMessage(value,pfs_pfs_pb.Project.deserializeBinaryFromReader);
+      msg.setProject(value);
+      break;
     case 1:
       var value = /** @type {string} */ (reader.readString());
       msg.setName(value);
@@ -9720,6 +9786,14 @@ proto.pps_v2.Pipeline.prototype.serializeBinary = function() {
  */
 proto.pps_v2.Pipeline.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
+  f = message.getProject();
+  if (f != null) {
+    writer.writeMessage(
+      2,
+      f,
+      pfs_pfs_pb.Project.serializeBinaryToWriter
+    );
+  }
   f = message.getName();
   if (f.length > 0) {
     writer.writeString(
@@ -9727,6 +9801,43 @@ proto.pps_v2.Pipeline.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
+};
+
+
+/**
+ * optional pfs_v2.Project project = 2;
+ * @return {?proto.pfs_v2.Project}
+ */
+proto.pps_v2.Pipeline.prototype.getProject = function() {
+  return /** @type{?proto.pfs_v2.Project} */ (
+    jspb.Message.getWrapperField(this, pfs_pfs_pb.Project, 2));
+};
+
+
+/**
+ * @param {?proto.pfs_v2.Project|undefined} value
+ * @return {!proto.pps_v2.Pipeline} returns this
+*/
+proto.pps_v2.Pipeline.prototype.setProject = function(value) {
+  return jspb.Message.setWrapperField(this, 2, value);
+};
+
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.pps_v2.Pipeline} returns this
+ */
+proto.pps_v2.Pipeline.prototype.clearProject = function() {
+  return this.setProject(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.pps_v2.Pipeline.prototype.hasProject = function() {
+  return jspb.Message.getField(this, 2) != null;
 };
 
 
@@ -14234,6 +14345,7 @@ proto.pps_v2.LogMessage.prototype.toObject = function(opt_includeInstance) {
  */
 proto.pps_v2.LogMessage.toObject = function(includeInstance, msg) {
   var f, obj = {
+    projectName: jspb.Message.getFieldWithDefault(msg, 10, ""),
     pipelineName: jspb.Message.getFieldWithDefault(msg, 1, ""),
     jobId: jspb.Message.getFieldWithDefault(msg, 2, ""),
     workerId: jspb.Message.getFieldWithDefault(msg, 3, ""),
@@ -14280,6 +14392,10 @@ proto.pps_v2.LogMessage.deserializeBinaryFromReader = function(msg, reader) {
     }
     var field = reader.getFieldNumber();
     switch (field) {
+    case 10:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setProjectName(value);
+      break;
     case 1:
       var value = /** @type {string} */ (reader.readString());
       msg.setPipelineName(value);
@@ -14347,6 +14463,13 @@ proto.pps_v2.LogMessage.prototype.serializeBinary = function() {
  */
 proto.pps_v2.LogMessage.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
+  f = message.getProjectName();
+  if (f.length > 0) {
+    writer.writeString(
+      10,
+      f
+    );
+  }
   f = message.getPipelineName();
   if (f.length > 0) {
     writer.writeString(
@@ -14412,6 +14535,24 @@ proto.pps_v2.LogMessage.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
+};
+
+
+/**
+ * optional string project_name = 10;
+ * @return {string}
+ */
+proto.pps_v2.LogMessage.prototype.getProjectName = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 10, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.pps_v2.LogMessage} returns this
+ */
+proto.pps_v2.LogMessage.prototype.setProjectName = function(value) {
+  return jspb.Message.setProto3StringField(this, 10, value);
 };
 
 
@@ -17251,7 +17392,8 @@ proto.pps_v2.ListPipelineRequest.toObject = function(includeInstance, msg) {
     pipeline: (f = msg.getPipeline()) && proto.pps_v2.Pipeline.toObject(includeInstance, f),
     history: jspb.Message.getFieldWithDefault(msg, 2, 0),
     details: jspb.Message.getBooleanFieldWithDefault(msg, 3, false),
-    jqfilter: jspb.Message.getFieldWithDefault(msg, 4, "")
+    jqfilter: jspb.Message.getFieldWithDefault(msg, 4, ""),
+    commitSet: (f = msg.getCommitSet()) && pfs_pfs_pb.CommitSet.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -17304,6 +17446,11 @@ proto.pps_v2.ListPipelineRequest.deserializeBinaryFromReader = function(msg, rea
     case 4:
       var value = /** @type {string} */ (reader.readString());
       msg.setJqfilter(value);
+      break;
+    case 5:
+      var value = new pfs_pfs_pb.CommitSet;
+      reader.readMessage(value,pfs_pfs_pb.CommitSet.deserializeBinaryFromReader);
+      msg.setCommitSet(value);
       break;
     default:
       reader.skipField();
@@ -17361,6 +17508,14 @@ proto.pps_v2.ListPipelineRequest.serializeBinaryToWriter = function(message, wri
     writer.writeString(
       4,
       f
+    );
+  }
+  f = message.getCommitSet();
+  if (f != null) {
+    writer.writeMessage(
+      5,
+      f,
+      pfs_pfs_pb.CommitSet.serializeBinaryToWriter
     );
   }
 };
@@ -17454,6 +17609,43 @@ proto.pps_v2.ListPipelineRequest.prototype.getJqfilter = function() {
  */
 proto.pps_v2.ListPipelineRequest.prototype.setJqfilter = function(value) {
   return jspb.Message.setProto3StringField(this, 4, value);
+};
+
+
+/**
+ * optional pfs_v2.CommitSet commit_set = 5;
+ * @return {?proto.pfs_v2.CommitSet}
+ */
+proto.pps_v2.ListPipelineRequest.prototype.getCommitSet = function() {
+  return /** @type{?proto.pfs_v2.CommitSet} */ (
+    jspb.Message.getWrapperField(this, pfs_pfs_pb.CommitSet, 5));
+};
+
+
+/**
+ * @param {?proto.pfs_v2.CommitSet|undefined} value
+ * @return {!proto.pps_v2.ListPipelineRequest} returns this
+*/
+proto.pps_v2.ListPipelineRequest.prototype.setCommitSet = function(value) {
+  return jspb.Message.setWrapperField(this, 5, value);
+};
+
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.pps_v2.ListPipelineRequest} returns this
+ */
+proto.pps_v2.ListPipelineRequest.prototype.clearCommitSet = function() {
+  return this.setCommitSet(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.pps_v2.ListPipelineRequest.prototype.hasCommitSet = function() {
+  return jspb.Message.getField(this, 5) != null;
 };
 
 
