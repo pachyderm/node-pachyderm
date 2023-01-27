@@ -1,4 +1,4 @@
-# :warning: DEPRICATED 
+# :warning: DEPRECATED 
 This library is not currently being maintained. If you have any questions please reach out to us on our [community slack](http://slack.pachyderm.io).
 
 # Node Pachyderm
