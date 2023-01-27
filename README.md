@@ -1,3 +1,6 @@
+# :warning: DEPRECATED 
+This library is not currently being maintained. If you have any questions please reach out to us on our [community slack](http://slack.pachyderm.io).
+
 # Node Pachyderm
 [![npmversion](https://img.shields.io/npm/v/@pachyderm/node-pachyderm.svg)](https://www.npmjs.com/package/@pachyderm/node-pachyderm)
 [![Slack Status](https://badge.slack.pachyderm.io/badge.svg)](http://slack.pachyderm.io)
